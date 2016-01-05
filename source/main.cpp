@@ -37,6 +37,41 @@ uint8_t g_challenge[CHALLENGE_SIZE];
 minar::Scheduler *g_scheduler;
 minar::callback_handle_t g_event = NULL;
 
+
+/*
+ * CrashCatcher test function
+ * This block must be removed after integrated successfully.
+ */
+static void disableFPU(void)
+{
+    static const uint32_t FPCA = 1 << 2;
+    SCB->CPACR &= ~(0xF << 20);
+    __set_CONTROL(__get_CONTROL() & ~FPCA);
+}
+
+void testInitFPURegisters(void)
+{
+    asm volatile("vmov.f32    s0, #-1.0\n"
+                 "vmov.f32    s1, #1.0\n"
+                 "vmov.f32    s2, #2.0\n"
+                 "vmov.f32    s3, #3.0\n"
+                 "vmov.f32    s4, #4.0\n"
+                 "vmov.f32    s5, #5.0\n"
+                 "vmov.f32    s6, #6.0\n"
+                 "vmov.f32    s7, #7.0\n"
+                 "vmov.f32    s8, #8.0\n"
+                 "ldr         r0, =0xBAADFEED\n"
+                 "vmsr        fpscr, r0\n"
+                 "bx          lr\n");
+}
+
+void crashWithFPUDisabled(void)
+{
+    disableFPU();
+    testInitFPURegisters();
+}
+/**********End of test block**********/
+
 static void toggle_led(void)
 {
     led = !led;
@@ -85,4 +120,5 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("main unprivileged box configured\n\r");
+    crashWithFPUDisabled();
 }

@@ -42,7 +42,7 @@ minar::callback_handle_t g_event = NULL;
  * CrashCatcher test function
  * This block must be removed after integrated successfully.
  */
-static void disableFPU(void)
+void disableFPU(void)
 {
     static const uint32_t FPCA = 1 << 2;
     SCB->CPACR &= ~(0xF << 20);

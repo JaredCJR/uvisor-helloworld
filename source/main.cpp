@@ -65,10 +65,10 @@ void app_start(int, char *[])
 {
     /* set the console baud-rate */
     pc.baud(115200);
-    mri_port.baud(115200);
+    mri_port.baud(230400);
 
     pc.printf("***** uvisor-helloworld example *****\n\r");
-    mri_port.printf("----- 115200 USART3 connected! -----\n\r");
+    mri_port.printf("----- 230400 USART3 connected! -----\n\r");
 
     /* reset challenge */
     memset(&g_challenge, 0, sizeof(g_challenge));

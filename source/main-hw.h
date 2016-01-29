@@ -55,6 +55,7 @@ extern uint8_t g_challenge[CHALLENGE_SIZE];
         {TIM2,   sizeof(*TIM2),   UVISOR_TACLDEF_PERIPH}, \
         {TIM5,   sizeof(*TIM5),   UVISOR_TACLDEF_PERIPH}, \
         {GPIOA,  sizeof(*GPIOA),  UVISOR_TACLDEF_PERIPH}, \
+        {GPIOB,  sizeof(*GPIOB),  UVISOR_TACLDEF_PERIPH}, \
         {GPIOG,  sizeof(*GPIOG),  UVISOR_TACLDEF_PERIPH}, \
         /* FIXME: secure RCC/EXTI/SYSCFG/FLASH */         \
         {RCC,    sizeof(*RCC),    UVISOR_TACLDEF_PERIPH}, \
@@ -64,6 +65,7 @@ extern uint8_t g_challenge[CHALLENGE_SIZE];
         {PWR,    sizeof(*PWR),    UVISOR_TACLDEF_PERIPH}, \
         {RCC,    sizeof(*RCC),    UVISOR_TACLDEF_PERIPH}, \
         {USART1, sizeof(*USART1), UVISOR_TACLDEF_PERIPH}, \
+        {USART3, sizeof(*USART3), UVISOR_TACLDEF_PERIPH}, \
         {(void *) 0x42470000, 0x1000, UVISOR_TACLDEF_PERIPH}, \
     }
 

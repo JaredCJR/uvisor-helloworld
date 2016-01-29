@@ -32,6 +32,7 @@ UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
 
 DigitalOut led(MAIN_LED);
 Serial pc(USBTX, USBRX);
+Serial mri_port(PB_10,PB_11);
 
 uint8_t g_challenge[CHALLENGE_SIZE];
 minar::Scheduler *g_scheduler;
@@ -64,8 +65,10 @@ void app_start(int, char *[])
 {
     /* set the console baud-rate */
     pc.baud(115200);
+    mri_port.baud(115200);
 
     pc.printf("***** uvisor-helloworld example *****\n\r");
+    mri_port.printf("----- 115200 USART3 connected! -----\n\r");
 
     /* reset challenge */
     memset(&g_challenge, 0, sizeof(g_challenge));

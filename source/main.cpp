@@ -22,6 +22,8 @@
 #include "box-challenge.h"
 #include "btn.h"
 
+#include "./mri/mri_UART.h"
+
 using mbed::util::FunctionPointer0;
 
 /* create ACLs for main box */
@@ -32,7 +34,6 @@ UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
 
 DigitalOut led(MAIN_LED);
 Serial pc(USBTX, USBRX);
-Serial mri_port(PB_10,PB_11);
 
 uint8_t g_challenge[CHALLENGE_SIZE];
 minar::Scheduler *g_scheduler;
@@ -60,16 +61,6 @@ static void retry_secret(void)
                 .tolerance(minar::milliseconds(1))
                 .getHandle();
 }
-
-#define mriEnableUSART_RxInterrupt(UART_num) (UART_num)->CR1 |= USART_CR1_RXNEIE
-#define mriClearRxInterrupt(UART_num) (UART_num)->SR &= ~USART_SR_RXNE
-
-void mri_Handler(void)
-{
-    mri_port.printf("mri_Handler\n\r");
-    mriClearRxInterrupt(USART3);
-}
-
 
 void app_start(int, char *[])
 {
@@ -100,11 +91,5 @@ void app_start(int, char *[])
     /*
      ****************************************************debug BOX
      */
-
-    mri_port.baud(230400);
-    mri_port.printf("----- 230400 USART3 connected! -----\n\r");
-    vIRQ_SetVector(USART3_IRQn,(uint32_t)&mri_Handler);
-    vIRQ_SetPriority(USART3_IRQn,0);//highest priority in all external interrupts.
-    vIRQ_EnableIRQ(USART3_IRQn);
-    mriEnableUSART_RxInterrupt(USART3);//Enable USART RX interrupt.
+    mri_UART_Init();
 }

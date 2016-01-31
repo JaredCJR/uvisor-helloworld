@@ -16,4 +16,10 @@ void mri_UART_Init(void)
     vIRQ_SetPriority(USART3_IRQn,0);//highest priority in all external interrupts.
     vIRQ_EnableIRQ(USART3_IRQn);
     mriEnableUSART_RxInterrupt(USART3);//Enable USART RX interrupt.
+    mri_port.printf("----- USART3 RX interrupt registered! -----\n\r");
+}
+
+void mri_PrintVal(uint32_t val)
+{
+    mri_port.printf("mri_Print:%d\n\r",val);
 }

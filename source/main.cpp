@@ -23,6 +23,7 @@
 #include "btn.h"
 
 #include "./mri/mri_UART.h"
+#include "./mri/debug_box.h"
 
 using mbed::util::FunctionPointer0;
 
@@ -92,4 +93,8 @@ void app_start(int, char *[])
      ****************************************************debug BOX
      */
     mri_UART_Init();
+    print_MriCore(100);
+    print_MriCore(200);
+    print_MriCore(650);
+    print_MriCore(10000);
 }

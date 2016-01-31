@@ -9,5 +9,6 @@
 
 extern void mri_Handler(void);
 extern void mri_UART_Init(void);
+extern void mri_PrintVal(uint32_t val);
 
 #endif/*__UVISOR_MRI_UART_H__*/

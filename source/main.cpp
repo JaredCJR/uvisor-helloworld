@@ -61,6 +61,16 @@ static void retry_secret(void)
                 .getHandle();
 }
 
+#define mriEnableUSART_RxInterrupt(UART_num) (UART_num)->CR1 |= USART_CR1_RXNEIE
+#define mriClearRxInterrupt(UART_num) (UART_num)->SR &= ~USART_SR_RXNE
+
+void mri_Handler(void)
+{
+    mri_port.printf("mri_Handler\n\r");
+    mriClearRxInterrupt(USART3);
+}
+
+
 void app_start(int, char *[])
 {
     /* set the console baud-rate */
@@ -88,4 +98,12 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("main unprivileged box configured\n\r");
+    /*
+     ****************************************************debug BOX
+     */
+
+    vIRQ_SetVector(USART3_IRQn,(uint32_t)&mri_Handler);
+    vIRQ_SetPriority(USART3_IRQn,0);//highest priority in all external interrupts.
+    vIRQ_EnableIRQ(USART3_IRQn);
+    mriEnableUSART_RxInterrupt(USART3);//Enable USART RX interrupt.
 }

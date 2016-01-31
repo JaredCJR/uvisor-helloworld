@@ -75,10 +75,8 @@ void app_start(int, char *[])
 {
     /* set the console baud-rate */
     pc.baud(115200);
-    mri_port.baud(230400);
 
     pc.printf("***** uvisor-helloworld example *****\n\r");
-    mri_port.printf("----- 230400 USART3 connected! -----\n\r");
 
     /* reset challenge */
     memset(&g_challenge, 0, sizeof(g_challenge));
@@ -98,10 +96,13 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("main unprivileged box configured\n\r");
+
     /*
      ****************************************************debug BOX
      */
 
+    mri_port.baud(230400);
+    mri_port.printf("----- 230400 USART3 connected! -----\n\r");
     vIRQ_SetVector(USART3_IRQn,(uint32_t)&mri_Handler);
     vIRQ_SetPriority(USART3_IRQn,0);//highest priority in all external interrupts.
     vIRQ_EnableIRQ(USART3_IRQn);

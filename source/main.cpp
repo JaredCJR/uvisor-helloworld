@@ -90,8 +90,10 @@ void app_start(int, char *[])
 
     // ************debug BOX Init*************
     secure_mri_UART_Init(230400,USART3_IRQn,USART3);//Serial instance is declared in mri/mri_UART.cpp
+    
     print_MriCore(100);
     print_MriCore(200);
     print_MriCore(650);
     print_MriCore(10000);
+    
 }

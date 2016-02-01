@@ -9,7 +9,6 @@
 
 
 extern void mri_Handler(void);
-UVISOR_EXTERN void __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx);
-extern void mri_PrintVal(uint32_t val);
+extern bool secure_mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx);
 
 #endif/*__UVISOR_MRI_UART_H__*/

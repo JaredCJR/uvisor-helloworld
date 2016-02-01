@@ -22,7 +22,6 @@
 #include "box-challenge.h"
 #include "btn.h"
 
-#include "./mri/mri_UART.h"
 #include "./mri/debug_box.h"
 
 using mbed::util::FunctionPointer0;
@@ -89,10 +88,8 @@ void app_start(int, char *[])
 
     pc.printf("main unprivileged box configured\n\r");
 
-    /*
-     ****************************************************debug BOX
-     */
-    mri_UART_Init();
+    // ************debug BOX Init*************
+    secure_mri_UART_Init(230400,USART3_IRQn,USART3);//Serial instance is declared in mri/mri_UART.cpp
     print_MriCore(100);
     print_MriCore(200);
     print_MriCore(650);

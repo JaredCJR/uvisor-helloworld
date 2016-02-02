@@ -1,7 +1,10 @@
 #include "mbed-drivers/mbed.h"
 #include "uvisor-lib/uvisor-lib.h"
 #include "debug_box_hw.h"
-#include "mri_UART.h"
+
+#define mriEnableUSART_RxInterrupt(UART_num) (UART_num)->CR1 |= USART_CR1_RXNEIE
+#define mriClearRxInterrupt(UART_num) (UART_num)->SR &= ~USART_SR_RXNE
+
 
 typedef struct {
     RawSerial *mri_serial;//USART3 pins in STM32F429
@@ -16,6 +19,13 @@ DEBUG_BOX_ACL(g_debug_box_acl);
 
 /* configure secure box compartment and reserve box context */
 UVISOR_BOX_CONFIG(debug_box, g_debug_box_acl, UVISOR_BOX_STACK_SIZE, MriCore);
+
+UVISOR_EXTERN void mri_Handler(void)                                                                                                          
+{
+    uvisor_ctx->mri_serial->printf("mri_Handler\n\r");
+    mriClearRxInterrupt(USART3);//USART3
+}
+
 
 UVISOR_EXTERN bool __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {

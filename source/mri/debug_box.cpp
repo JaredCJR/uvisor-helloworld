@@ -4,7 +4,8 @@
 #include "mri_UART.h"
 
 typedef struct {
-    Serial mri_port(PB_10,PB_11);//USART3 pins in STM32F429
+    RawSerial *mri_serial;//USART3 pins in STM32F429
+    uint8_t serial_buffer[sizeof(RawSerial)];
     uint32_t val;
 } MriCore;
 
@@ -18,14 +19,14 @@ UVISOR_BOX_CONFIG(debug_box, g_debug_box_acl, UVISOR_BOX_STACK_SIZE, MriCore);
 
 UVISOR_EXTERN bool __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {
-    //memcpy(uvisor_ctx->mri_port,new Serial(PB_10,PB_11), sizeof(Serial));//USART3 pins in STM32F429
-    uvisor_ctx->mri_port.baud(baudrate);
-    uvisor_ctx->mri_port.printf("----- USART3 connected! -----\n\r");
+    uvisor_ctx->mri_serial = ::new((void *) &uvisor_ctx->serial_buffer)RawSerial(PB_10,PB_11);//"placement new" operator in C++
+    uvisor_ctx->mri_serial->baud(baudrate);
+    uvisor_ctx->mri_serial->printf("----- USART3 connected! -----\n\r");
     vIRQ_SetVector(USARTx_IRQn,(uint32_t)&mri_Handler);
     vIRQ_SetPriority(USARTx_IRQn,0);//highest priority in all external interrupts.
     vIRQ_EnableIRQ(USARTx_IRQn);
     mriEnableUSART_RxInterrupt(USARTx);//Enable USART RX interrupt.
-    uvisor_ctx->mri_port.printf("----- USART3 RX interrupt registered! -----\n\r");
+    uvisor_ctx->mri_serial->printf("----- USART3 RX interrupt registered! -----\n\r");
     return 1;
 }
 
@@ -38,7 +39,7 @@ bool secure_mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USAR
 
 static void mri_PrintVal(uint32_t val) 
 {
-    uvisor_ctx->mri_port.printf("mri_Print:%d\n\r",val);
+    uvisor_ctx->mri_serial->printf("mri_Print:%d\n\r",val);
 }
 
 

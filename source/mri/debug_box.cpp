@@ -20,7 +20,7 @@ DEBUG_BOX_ACL(g_debug_box_acl);
 /* configure secure box compartment and reserve box context */
 UVISOR_BOX_CONFIG(debug_box, g_debug_box_acl, UVISOR_BOX_STACK_SIZE, MriCore);
 
-UVISOR_EXTERN void mri_Handler(void)                                                                                                          
+void mri_Handler(void)                                                                                                          
 {
     uvisor_ctx->mri_serial->printf("mri_Handler\n\r");
     mriClearRxInterrupt(USART3);//USART3

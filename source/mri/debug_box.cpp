@@ -20,16 +20,32 @@
 #include "mbed-drivers/mbed.h"
 #include "uvisor-lib/uvisor-lib.h"
 #include "debug_box_hw.h"
+#include "include/buffer.h"
+#include "include/packet.h"
+#include "include/try_catch.h"
 
 #define mriEnableUSART_RxInterrupt(UART_num) (UART_num)->CR1 |= USART_CR1_RXNEIE
 #define mriClearRxInterrupt(UART_num) (UART_num)->SR &= ~USART_SR_RXNE
 
+typedef struct
+{
+    mriPacket   packet;
+    mriBuffer   buffer;
+    uint32_t    flags;
+    uint8_t     signalValue;
+} MriCore;
 
 typedef struct {
-    RawSerial *mri_serial;//USART3 pins in STM32F429
+    /*USART instance*/
+    RawSerial *mri_serial;
     uint8_t serial_buffer[sizeof(RawSerial)];
+
+    /*core struct*/
+    MriCore g_mri;
+
+    /*test*/
     uint32_t val;
-} MriCore;
+} Debug_Context;
 
 
 /* create ACLs for secret data section */
@@ -37,7 +53,7 @@ DEBUG_BOX_ACL(g_debug_box_acl);
 
 
 /* configure secure box compartment and reserve box context */
-UVISOR_BOX_CONFIG(debug_box, g_debug_box_acl, UVISOR_BOX_STACK_SIZE, MriCore);
+UVISOR_BOX_CONFIG(debug_box, g_debug_box_acl, UVISOR_BOX_STACK_SIZE,Debug_Context);
 
 
 /*For test,the code dose not make any sense.*/
@@ -102,24 +118,35 @@ static void __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *US
     mriEnableUSART_RxInterrupt(USARTx);
     uvisor_ctx->mri_serial->printf("----- USART3 RX interrupt registered! -----\n\r");
 }
-/*
+
+
 static void clearCoreStructure(void)                                                                                              
 {
-    memset(&g_mri, 0, sizeof(g_mri));
+    memset(&uvisor_ctx->g_mri, 0, sizeof(uvisor_ctx->g_mri));
 }
-*/
+
+
+UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
+{
+    clearCoreStructure();
+
+    __try
+    {
+    }
+    __catch
+    {
+        //return false;
+    }
+    /*STM32F429 config*/
+    __mri_UART_Init(baudrate,USARTx_IRQn,USARTx);
+    return true;
+}
 
 bool mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {
     return secure_gateway(debug_box,__mri_Init,baudrate,USARTx_IRQn,USARTx);
 }
 
-UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
-{
-    /*STM32F429 config*/
-    __mri_UART_Init(baudrate,USARTx_IRQn,USARTx);
-    return 1;
-}
 
 
 static void mri_PrintVal(uint32_t val) 
@@ -132,7 +159,7 @@ UVISOR_EXTERN bool __print_MriCore(uint32_t val)
 {
     uvisor_ctx->val = val;
     mri_PrintVal(uvisor_ctx->val);
-    return 1;
+    return true;
 }
 
 

@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2013-2015, ARM Limited, All Rights Reserved
- * SPDX-License-Identifier: Apache-2.0
+ * Copyright 2016 Chang,Jia-Rung (https://github.com/JaredCJR)
+ * Copyright (c) 2013-2015, ARM Limited
+ * SPDX-License-Identifier: Apache-2.0                                                                                                        
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may
  * not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "mbed-drivers/mbed.h"
 #include "minar/minar.h"
 #include "core-util/FunctionPointer.h"

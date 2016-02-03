@@ -86,25 +86,41 @@ void volatile mri_Handler(void)
 }
 
 
-UVISOR_EXTERN bool __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
+static void __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {
-    uvisor_ctx->mri_serial = ::new((void *) &uvisor_ctx->serial_buffer)RawSerial(PB_10,PB_11);//"placement new" operator in C++
+    /*"placement new" operator in C++*/
+    uvisor_ctx->mri_serial = ::new((void *) &uvisor_ctx->serial_buffer)RawSerial(PB_10,PB_11);
     uvisor_ctx->mri_serial->baud(baudrate);
     uvisor_ctx->mri_serial->printf("----- USART3 connected! -----\n\r");
     vIRQ_SetVector(USARTx_IRQn,(uint32_t)&mri_Handler);
-    vIRQ_SetPriority(USARTx_IRQn,0);//highest priority in all external interrupts.
+
+    /*highest priority in all external interrupts.*/
+    vIRQ_SetPriority(USARTx_IRQn,0);
     vIRQ_EnableIRQ(USARTx_IRQn);
-    mriEnableUSART_RxInterrupt(USARTx);//Enable USART RX interrupt.
+
+    /*Enable USART RX interrupt.*/
+    mriEnableUSART_RxInterrupt(USARTx);
     uvisor_ctx->mri_serial->printf("----- USART3 RX interrupt registered! -----\n\r");
+}
+/*
+static void clearCoreStructure(void)                                                                                              
+{
+    memset(&g_mri, 0, sizeof(g_mri));
+}
+*/
+
+bool mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
+{
+    return secure_gateway(debug_box,__mri_Init,baudrate,USARTx_IRQn,USARTx);
+}
+
+UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
+{
+    /*STM32F429 config*/
+    __mri_UART_Init(baudrate,USARTx_IRQn,USARTx);
     return 1;
 }
 
-
-
-bool mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
-{
-    return secure_gateway(debug_box,__mri_UART_Init,baudrate,USARTx_IRQn,USARTx);
-}
 
 static void mri_PrintVal(uint32_t val) 
 {

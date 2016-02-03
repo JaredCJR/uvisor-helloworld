@@ -91,7 +91,7 @@ void app_start(int, char *[])
     pc.printf("main unprivileged box configured\n\r");
 
     // ************debug BOX Init*************
-    mri_UART_Init(230400,USART3_IRQn,USART3);//Serial instance is declared in mri/mri_UART.cpp
+    mri_Init(230400,USART3_IRQn,USART3);
     
     print_MriCore(100);
     print_MriCore(200);

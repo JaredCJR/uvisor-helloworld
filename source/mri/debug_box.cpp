@@ -41,7 +41,6 @@ UVISOR_BOX_CONFIG(debug_box, g_debug_box_acl, UVISOR_BOX_STACK_SIZE, MriCore);
 
 
 /*For test,the code dose not make any sense.*/
-#define debugbreak()  { __asm volatile ("bkpt #0"); }
 void volatile mri_Handler(void) 
 {
     uint32_t registers[16];
@@ -102,7 +101,7 @@ UVISOR_EXTERN bool __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_Type
 
 
 
-bool secure_mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
+bool mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {
     return secure_gateway(debug_box,__mri_UART_Init,baudrate,USARTx_IRQn,USARTx);
 }

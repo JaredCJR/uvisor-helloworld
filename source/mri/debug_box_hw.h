@@ -24,14 +24,26 @@
 
 #if defined(TARGET_LIKE_STM32F429I_DISCO)
 
-#define DEBUG_BOX_ACL(acl_list_name)                      \
-    static const UvisorBoxAclItem acl_list_name[] = {     \
-        {GPIOB,  sizeof(*GPIOB),  UVISOR_TACLDEF_PERIPH}, \
-        {RCC,    sizeof(*RCC),    UVISOR_TACLDEF_PERIPH}, \
-        {USART3, sizeof(*USART3), UVISOR_TACLDEF_PERIPH}, \
+#define mriEnableUSART_RxInterrupt(UART_num) (UART_num)->CR1 |= USART_CR1_RXNEIE
+#define mriClearRxInterrupt(UART_num) (UART_num)->SR &= ~USART_SR_RXNE
+
+
+#define DEBUG_BOX_ACL(acl_list_name)                            \
+    static const UvisorBoxAclItem acl_list_name[] = {           \
+        /*USART3 related ACLs*/                                 \
+        {GPIOB,     sizeof(*GPIOB),     UVISOR_TACLDEF_PERIPH}, \
+        {RCC,       sizeof(*RCC),       UVISOR_TACLDEF_PERIPH}, \
+        {USART3,    sizeof(*USART3),    UVISOR_TACLDEF_PERIPH}, \
+                                                                \
+        /*debug monitor related ACLs*/                          \
+        {CoreDebug, sizeof(*CoreDebug), UVISOR_TACLDEF_PERIPH}, \
     }
 
+
 #else
+
+#define mriEnableUSART_RxInterrupt(UART_num)
+#define mriClearRxInterrupt(UART_num)
 
 #define DEBUG_BOX_ACL(acl_list_name) \
     static const UvisorBoxAclItem acl_list_name[] = {}

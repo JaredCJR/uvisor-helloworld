@@ -23,9 +23,8 @@
 #include "include/buffer.h"
 #include "include/packet.h"
 #include "include/try_catch.h"
-
-#define mriEnableUSART_RxInterrupt(UART_num) (UART_num)->CR1 |= USART_CR1_RXNEIE
-#define mriClearRxInterrupt(UART_num) (UART_num)->SR &= ~USART_SR_RXNE
+#include "architectures/armv7-m/armv7-m.h"
+#include "architectures/armv7-m/debug_cm3.h"
 
 typedef struct
 {
@@ -37,11 +36,15 @@ typedef struct
 
 typedef struct {
     /*USART instance*/
-    RawSerial *mri_serial;
-    uint8_t serial_buffer[sizeof(RawSerial)];
+    RawSerial       *mri_serial;
+    uint8_t         serial_buffer[sizeof(RawSerial)];
 
-    /*core struct*/
+    /*Core state*/
     MriCore g_mri;
+
+    /*ARMv7 Cortex-M State*/
+    CortexMState    __mriCortexMState;
+    const uint32_t  __mriCortexMFakeStack[8];
 
     /*test*/
     uint32_t val;
@@ -125,18 +128,36 @@ static void clearCoreStructure(void)
     memset(&uvisor_ctx->g_mri, 0, sizeof(uvisor_ctx->g_mri));
 }
 
+static void clearState(void)
+{
+    memset(&uvisor_ctx->__mriCortexMState, 0, sizeof(uvisor_ctx->__mriCortexMState));
+}
+
+
+static void configureDWTandFPB(void)
+{   
+    //enableDWTandITM();
+    /*src_box, addr, val, op, mask*/
+    //uvisor_write(debug_box,CoreDebug->DEMCR,CoreDebug_DEMCR_TRCENA,UVISOR_OP_OR,CoreDebug_DEMCR_TRCENA);
+    //uint32_t val = uvisor_read(debug_box,CoreDebug->DEMCR);
+    //initDWT();
+    //initFPB(); 
+}
+
 
 UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {
     clearCoreStructure();
+    clearState();
 
-    __try
-    {
-    }
-    __catch
-    {
+    //__try
+    //{
+        configureDWTandFPB();
+    //}
+    //__catch
+    //{
         //return false;
-    }
+    //}
     /*STM32F429 config*/
     __mri_UART_Init(baudrate,USARTx_IRQn,USARTx);
     return true;

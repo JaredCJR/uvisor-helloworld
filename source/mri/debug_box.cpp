@@ -26,6 +26,8 @@
 #include "architectures/armv7-m/armv7-m.h"
 #include "architectures/armv7-m/debug_cm3.h"
 
+void printBits(size_t const size, void const * const ptr);
+
 typedef struct
 {
     mriPacket   packet;
@@ -123,12 +125,12 @@ static void __mri_UART_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *US
 }
 
 
-static void clearCoreStructure(void)                                                                                              
+static __INLINE void clearCoreStructure(void)                                                                                              
 {
     memset(&uvisor_ctx->g_mri, 0, sizeof(uvisor_ctx->g_mri));
 }
 
-static void clearState(void)
+static __INLINE void clearState(void)
 {
     memset(&uvisor_ctx->__mriCortexMState, 0, sizeof(uvisor_ctx->__mriCortexMState));
 }
@@ -136,10 +138,16 @@ static void clearState(void)
 
 static void configureDWTandFPB(void)
 {   
-    //enableDWTandITM();
+    enableDWTandITM();
     /*src_box, addr, val, op, mask*/
     //uvisor_write(debug_box,CoreDebug->DEMCR,CoreDebug_DEMCR_TRCENA,UVISOR_OP_OR,CoreDebug_DEMCR_TRCENA);
     //uint32_t val = uvisor_read(debug_box,CoreDebug->DEMCR);
+    //uint32_t val = uvisor_read(debug_box,0xE000EDF0);
+    /*
+    uint32_t val = 0;
+    val = uvisor_read(debug_box,0xE000EDF0);
+    printBits(sizeof(uint32_t),&val);
+    */
     //initDWT();
     //initFPB(); 
 }
@@ -147,19 +155,23 @@ static void configureDWTandFPB(void)
 
 UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
 {
+    __mri_UART_Init(baudrate,USARTx_IRQn,USARTx);
     clearCoreStructure();
-    clearState();
 
+    /*
+     * CortexM Init
+     */
     //__try
     //{
-        configureDWTandFPB();
+        clearState();
     //}
     //__catch
     //{
-        //return false;
+    //    return false;
     //}
-    /*STM32F429 config*/
-    __mri_UART_Init(baudrate,USARTx_IRQn,USARTx);
+
+
+    configureDWTandFPB();
     return true;
 }
 
@@ -168,6 +180,29 @@ bool mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
     return secure_gateway(debug_box,__mri_Init,baudrate,USARTx_IRQn,USARTx);
 }
 
+
+/*
+ * assumes little endian
+ * EX.
+ * printBits(sizeof(uint32_t),&val);
+ * */
+void printBits(size_t const size, void const * const ptr)
+{
+    unsigned char *b = (unsigned char*) ptr;
+    unsigned char byte;
+    int i, j;
+
+    for (i=size-1;i>=0;i--)
+    {
+        for (j=7;j>=0;j--)
+        {
+            byte = b[i] & (1<<j);
+            byte >>= j;
+            uvisor_ctx->mri_serial->printf("%u", byte);
+        }
+    }
+    uvisor_ctx->mri_serial->printf("\n\r");
+}
 
 
 static void mri_PrintVal(uint32_t val) 

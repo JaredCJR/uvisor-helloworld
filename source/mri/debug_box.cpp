@@ -139,17 +139,8 @@ static __INLINE void clearState(void)
 static void configureDWTandFPB(void)
 {   
     enableDWTandITM();
-    /*src_box, addr, val, op, mask*/
-    //uvisor_write(debug_box,CoreDebug->DEMCR,CoreDebug_DEMCR_TRCENA,UVISOR_OP_OR,CoreDebug_DEMCR_TRCENA);
-    //uint32_t val = uvisor_read(debug_box,CoreDebug->DEMCR);
-    //uint32_t val = uvisor_read(debug_box,0xE000EDF0);
-    /*
-    uint32_t val = 0;
-    val = uvisor_read(debug_box,0xE000EDF0);
-    printBits(sizeof(uint32_t),&val);
-    */
-    //initDWT();
-    //initFPB(); 
+    initDWT();
+    //initFPB();
 }
 
 

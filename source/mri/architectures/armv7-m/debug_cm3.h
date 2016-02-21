@@ -24,6 +24,11 @@
 
 extern void printBits(size_t const size, void const * const ptr);
 
+/*uvisor macro*/
+#define FPB_CTRL 0xE0002000
+#define EMPTY    0x0
+/*end of uvisor macro*/
+
 /* Data Watchpoint and Trace Registers */
 typedef struct
 {
@@ -184,7 +189,7 @@ static __INLINE void clearDWTComparator(DWT_COMP_Type* pComparatorStruct)
 
 /*
  * FIX the poor code when the uvisor_read/write fixed.
- * STM32f429 only support 1 DWT_comparator
+ * STM32f429 only support 4 DWT_comparator
  */
 static __INLINE void clearDWTComparator(int nComparator)
 {
@@ -192,7 +197,19 @@ static __INLINE void clearDWTComparator(int nComparator)
 #define DWT_Struct_COMP_0       0xE0001020
 #define DWT_Struct_MASK_0       DWT_Struct_COMP_0+4
 #define DWT_Struct_FUNCTION_0   DWT_Struct_COMP_0+8
-#define EMPTY                    0x0
+
+#define DWT_Struct_COMP_1       DWT_Struct_COMP_0
+#define DWT_Struct_MASK_1       DWT_Struct_COMP_1+4
+#define DWT_Struct_FUNCTION_1   DWT_Struct_COMP_1+8
+
+#define DWT_Struct_COMP_2       DWT_Struct_COMP_1
+#define DWT_Struct_MASK_2       DWT_Struct_COMP_2+4
+#define DWT_Struct_FUNCTION_2   DWT_Struct_COMP_2+8
+
+#define DWT_Struct_COMP_3       DWT_Struct_COMP_2
+#define DWT_Struct_MASK_3       DWT_Struct_COMP_3+4
+#define DWT_Struct_FUNCTION_3   DWT_Struct_COMP_3+8
+
     switch(nComparator)
     {
         case 0:
@@ -204,7 +221,36 @@ static __INLINE void clearDWTComparator(int nComparator)
                     DWT_COMP_FUNCTION_EMITRANGE |
                     DWT_COMP_FUNCTION_FUNCTION_MASK);
             uvisor_write(debug_box,DWT_Struct_FUNCTION_0,val);
-
+            break;
+        case 1:
+            uvisor_write(debug_box,DWT_Struct_COMP_1,EMPTY);
+            uvisor_write(debug_box,DWT_Struct_MASK_1,EMPTY);
+            val = uvisor_read(debug_box,DWT_Struct_FUNCTION_1);
+            val &= ~(DWT_COMP_FUNCTION_DATAVMATCH | 
+                    DWT_COMP_FUNCTION_CYCMATCH |
+                    DWT_COMP_FUNCTION_EMITRANGE |
+                    DWT_COMP_FUNCTION_FUNCTION_MASK);
+            uvisor_write(debug_box,DWT_Struct_FUNCTION_1,val);
+            break;
+        case 2:
+            uvisor_write(debug_box,DWT_Struct_COMP_2,EMPTY);
+            uvisor_write(debug_box,DWT_Struct_MASK_2,EMPTY);
+            val = uvisor_read(debug_box,DWT_Struct_FUNCTION_2);
+            val &= ~(DWT_COMP_FUNCTION_DATAVMATCH | 
+                    DWT_COMP_FUNCTION_CYCMATCH |
+                    DWT_COMP_FUNCTION_EMITRANGE |
+                    DWT_COMP_FUNCTION_FUNCTION_MASK);
+            uvisor_write(debug_box,DWT_Struct_FUNCTION_2,val);
+            break;
+        case 3:
+            uvisor_write(debug_box,DWT_Struct_COMP_3,EMPTY);
+            uvisor_write(debug_box,DWT_Struct_MASK_3,EMPTY);
+            val = uvisor_read(debug_box,DWT_Struct_FUNCTION_3);
+            val &= ~(DWT_COMP_FUNCTION_DATAVMATCH | 
+                    DWT_COMP_FUNCTION_CYCMATCH |
+                    DWT_COMP_FUNCTION_EMITRANGE |
+                    DWT_COMP_FUNCTION_FUNCTION_MASK);
+            uvisor_write(debug_box,DWT_Struct_FUNCTION_3,val);
             break;
     }
 }
@@ -215,7 +261,7 @@ static __INLINE void clearDWTComparators(void)
     uint32_t        comparatorCount;
     uint32_t        i;
     
-    comparatorCount = getDWTComparatorCount();
+    comparatorCount = getDWTComparatorCount();//if DWT enabled,STM32F429 will get 4.
     /*
     for (i = 0 ; i < comparatorCount ; i++)
     {
@@ -476,23 +522,76 @@ static __INLINE DWT_COMP_Type* disableDWTWatchpoint(uint32_t watchpointAddress,
 /*  Enables this comparator.  Set to 1 to enable. */
 #define FP_COMP_ENABLE              1
 
+
+
+
 /* FPB - Flash Patch Breakpoint Routines. */
 static __INLINE uint32_t getFPBCodeComparatorCount(void)
 {
+    /*
     uint32_t    controlValue = FPB->CTRL;
+    return (((controlValue & FP_CTRL_NUM_CODE_MSB_MASK) >> 8) |
+            ((controlValue & FP_CTRL_NUM_CODE_LSB_MASK) >> 4));
+    */
+    uint32_t controlValue = uvisor_read(debug_box,FPB_CTRL);
     return (((controlValue & FP_CTRL_NUM_CODE_MSB_MASK) >> 8) |
             ((controlValue & FP_CTRL_NUM_CODE_LSB_MASK) >> 4));
 }
 
 static __INLINE uint32_t getFPBLiteralComparatorCount(void)
 {
+    /*
     uint32_t    controlValue = FPB->CTRL;
+    return ((controlValue & FP_CTRL_NUM_LIT_MASK) >> FP_CTRL_NUM_LIT_SHIFT);
+    */
+    uint32_t controlValue = uvisor_read(debug_box,FPB_CTRL);
     return ((controlValue & FP_CTRL_NUM_LIT_MASK) >> FP_CTRL_NUM_LIT_SHIFT);
 }
 
+/*
 static __INLINE void clearFPBComparator(uint32_t* pComparator)
 {
     *pComparator = 0;
+}
+*/
+static __INLINE void clearFPBComparator(uint32_t nComparator)
+{
+#define FPB_Comparator_0 0xE0002008
+#define FPB_Comparator_1 FPB_Comparator_0+4
+#define FPB_Comparator_2 FPB_Comparator_1+4
+#define FPB_Comparator_3 FPB_Comparator_2+4
+#define FPB_Comparator_4 FPB_Comparator_3+4
+#define FPB_Comparator_5 FPB_Comparator_4+4
+#define FPB_Comparator_6 FPB_Comparator_5+4
+#define FPB_Comparator_7 FPB_Comparator_6+4
+
+    switch(nComparator)
+    {
+        case 0:
+            uvisor_write(debug_box,FPB_Comparator_0,EMPTY);
+            break;
+        case 1:
+            uvisor_write(debug_box,FPB_Comparator_1,EMPTY);
+            break;
+        case 2:
+            uvisor_write(debug_box,FPB_Comparator_2,EMPTY);
+            break;
+        case 3:
+            uvisor_write(debug_box,FPB_Comparator_3,EMPTY);
+            break;
+        case 4:
+            uvisor_write(debug_box,FPB_Comparator_4,EMPTY);
+            break;
+        case 5:
+            uvisor_write(debug_box,FPB_Comparator_5,EMPTY);
+            break;
+        case 6:
+            uvisor_write(debug_box,FPB_Comparator_6,EMPTY);
+            break;
+        case 7:
+            uvisor_write(debug_box,FPB_Comparator_7,EMPTY);
+            break;
+    }
 }
 
 static __INLINE int isAddressInUpperHalfGig(uint32_t address)
@@ -555,7 +654,7 @@ static __INLINE int isFPBComparatorEnabled(uint32_t comparator)
 
 static __INLINE uint32_t* findFPBBreakpointComparator(uint32_t breakpointAddress, int32_t is32BitInstruction)
 {
-    uint32_t*    pCurrentComparator = FPB_COMP_ARRAY;
+    //uint32_t*    pCurrentComparator = FPB_COMP_ARRAY;
     uint32_t     comparatorValueForThisBreakpoint;
     uint32_t     codeComparatorCount;
     uint32_t     i;
@@ -565,6 +664,7 @@ static __INLINE uint32_t* findFPBBreakpointComparator(uint32_t breakpointAddress
     
     for (i = 0 ; i < codeComparatorCount ; i++)
     {
+        /*
         uint32_t maskOffReservedBits;
         
         maskOffReservedBits = maskOffFPBComparatorReservedBits(*pCurrentComparator);
@@ -572,6 +672,70 @@ static __INLINE uint32_t* findFPBBreakpointComparator(uint32_t breakpointAddress
             return pCurrentComparator;
 
         pCurrentComparator++;
+        */
+
+        /*
+         * STM32F429i has 6 codeComparators
+         */
+#define pCurrentComparator_0 0xE0002008
+#define pCurrentComparator_1 pCurrentComparator_0+4
+#define pCurrentComparator_2 pCurrentComparator_1+4
+#define pCurrentComparator_3 pCurrentComparator_2+4
+#define pCurrentComparator_4 pCurrentComparator_3+4
+#define pCurrentComparator_5 pCurrentComparator_4+4
+        uint32_t CurrentComparator_val;
+        uint32_t maskOffReservedBits;
+        switch(i)
+        {
+            case 0:
+                CurrentComparator_val = uvisor_read(debug_box,pCurrentComparator_0);
+                maskOffReservedBits = maskOffFPBComparatorReservedBits(CurrentComparator_val);
+                if (comparatorValueForThisBreakpoint == maskOffReservedBits)
+                {
+                    return (uint32_t*)pCurrentComparator_0;
+                }
+                break;
+            case 1:
+                CurrentComparator_val = uvisor_read(debug_box,pCurrentComparator_1);
+                maskOffReservedBits = maskOffFPBComparatorReservedBits(CurrentComparator_val);
+                if (comparatorValueForThisBreakpoint == maskOffReservedBits)
+                {
+                    return (uint32_t*)pCurrentComparator_1;
+                }
+                break;
+            case 2:
+                CurrentComparator_val = uvisor_read(debug_box,pCurrentComparator_2);
+                maskOffReservedBits = maskOffFPBComparatorReservedBits(CurrentComparator_val);
+                if (comparatorValueForThisBreakpoint == maskOffReservedBits)
+                {
+                    return (uint32_t*)pCurrentComparator_2;
+                }
+                break;
+            case 3:
+                CurrentComparator_val = uvisor_read(debug_box,pCurrentComparator_3);
+                maskOffReservedBits = maskOffFPBComparatorReservedBits(CurrentComparator_val);
+                if (comparatorValueForThisBreakpoint == maskOffReservedBits)
+                {
+                    return (uint32_t*)pCurrentComparator_3;
+                }
+                break;
+            case 4:
+                CurrentComparator_val = uvisor_read(debug_box,pCurrentComparator_4);
+                maskOffReservedBits = maskOffFPBComparatorReservedBits(CurrentComparator_val);
+                if (comparatorValueForThisBreakpoint == maskOffReservedBits)
+                {
+                    return (uint32_t*)pCurrentComparator_4;
+                }
+                break;
+            case 5:
+                CurrentComparator_val = uvisor_read(debug_box,pCurrentComparator_5);
+                maskOffReservedBits = maskOffFPBComparatorReservedBits(CurrentComparator_val);
+                if (comparatorValueForThisBreakpoint == maskOffReservedBits)
+                {
+                    return (uint32_t*)pCurrentComparator_5;
+                }
+                break;
+        }
     }
     
     /* Return NULL if no FPB comparator is already enabled for this breakpoint. */
@@ -627,32 +791,41 @@ static __INLINE uint32_t* disableFPBBreakpointComparator(uint32_t breakpointAddr
     
     pExistingFPBBreakpoint = findFPBBreakpointComparator(breakpointAddress, is32BitInstruction);
     if (pExistingFPBBreakpoint)
-        clearFPBComparator(pExistingFPBBreakpoint);
+    {
+        //clearFPBComparator(pExistingFPBBreakpoint);
+        *pExistingFPBBreakpoint = 0;
+    }
  
     return pExistingFPBBreakpoint;
 }
 
 static __INLINE void clearFPBComparators(void)
 {
-    uint32_t* pCurrentComparator = FPB_COMP_ARRAY;
+    //uint32_t* pCurrentComparator = FPB_COMP_ARRAY;
     uint32_t  codeComparatorCount;
     uint32_t  literalComparatorCount;
     uint32_t  totalComparatorCount;
     uint32_t  i;
     
-    codeComparatorCount = getFPBCodeComparatorCount();
-    literalComparatorCount = getFPBLiteralComparatorCount();
+    codeComparatorCount = getFPBCodeComparatorCount();//if FPB is enabled,STM32F429 will return 6
+    literalComparatorCount = getFPBLiteralComparatorCount();//if FPB is enabled,STM32F429 will return 2
     totalComparatorCount = codeComparatorCount + literalComparatorCount;
     for (i = 0 ; i < totalComparatorCount ; i++)
     {
+        /*
         clearFPBComparator(pCurrentComparator);
         pCurrentComparator++;
+        */
+        clearFPBComparator(i);
     }
 }
 
 static __INLINE void enableFPB(void)
 {
-    FPB->CTRL |= (FP_CTRL_KEY | FP_CTRL_ENABLE);
+    //FPB->CTRL |= (FP_CTRL_KEY | FP_CTRL_ENABLE);
+    uint32_t val = uvisor_read(debug_box,FPB_CTRL);
+    val |= (FP_CTRL_KEY | FP_CTRL_ENABLE);
+    uvisor_write(debug_box,FPB_CTRL,val);
 }
 
 static __INLINE void initFPB(void)

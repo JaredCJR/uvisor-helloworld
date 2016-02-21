@@ -140,7 +140,7 @@ static void configureDWTandFPB(void)
 {   
     enableDWTandITM();
     initDWT();
-    //initFPB();
+    initFPB();
 }
 
 

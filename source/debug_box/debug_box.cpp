@@ -20,11 +20,11 @@
 #include "mbed-drivers/mbed.h"
 #include "uvisor-lib/uvisor-lib.h"
 #include "debug_box_hw.h"
-#include "include/buffer.h"
-#include "include/packet.h"
-#include "include/try_catch.h"
-#include "architectures/armv7-m/armv7-m.h"
-#include "architectures/armv7-m/debug_cm3.h"
+#include "mri/include/buffer.h"
+#include "mri/include/packet.h"
+#include "mri/include/try_catch.h"
+#include "mri/architectures/armv7-m/armv7-m.h"
+#include "mri/architectures/armv7-m/debug_cm3.h"
 
 void printBits(size_t const size, void const * const ptr);
 

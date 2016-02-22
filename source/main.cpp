@@ -24,7 +24,7 @@
 #include "box-challenge.h"
 #include "btn.h"
 
-#include "./mri/debug_box.h"
+#include "./debug_box/debug_box.h"
 
 using mbed::util::FunctionPointer0;
 

@@ -17,40 +17,12 @@
  */
 
 
-#include "mbed-drivers/mbed.h"
 #include "uvisor-lib/uvisor-lib.h"
+#include "debug_context.h"
 #include "debug_box_hw.h"
-#include "mri/include/buffer.h"
-#include "mri/include/packet.h"
-#include "mri/include/try_catch.h"
-#include "mri/architectures/armv7-m/armv7-m.h"
-#include "mri/architectures/armv7-m/debug_cm3.h"
 
 void printBits(size_t const size, void const * const ptr);
 
-typedef struct
-{
-    mriPacket   packet;
-    mriBuffer   buffer;
-    uint32_t    flags;
-    uint8_t     signalValue;
-} MriCore;
-
-typedef struct {
-    /*USART instance*/
-    RawSerial       *mri_serial;
-    uint8_t         serial_buffer[sizeof(RawSerial)];
-
-    /*Core state*/
-    MriCore g_mri;
-
-    /*ARMv7 Cortex-M State*/
-    CortexMState    __mriCortexMState;
-    const uint32_t  __mriCortexMFakeStack[8];
-
-    /*test*/
-    uint32_t val;
-} Debug_Context;
 
 
 /* create ACLs for secret data section */
@@ -154,7 +126,6 @@ UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *
      */
     //__try
     //{
-        clearState();
     //}
     //__catch
     //{
@@ -162,7 +133,13 @@ UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *
     //}
 
 
+    clearState();
     configureDWTandFPB();
+    //defaultSvcAndSysTickInterruptsToPriority1();
+    //Platform_DisableSingleStep(&uvisor_ctx);
+    //clearMonitorPending();
+    //enableDebugMonitorAtPriority0(); 
+
     return true;
 }
 

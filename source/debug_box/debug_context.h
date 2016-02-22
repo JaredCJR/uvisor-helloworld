@@ -16,14 +16,40 @@
  */
 
 
-#ifndef __UVISOR_DEBUG_BOX_H__
-#define __UVISOR_DEBUG_BOX_H__
+#ifndef __UVISOR_DEBUG_CONTEXT_H__
+#define __UVISOR_DEBUG_CONTEXT_H__
 
 #include "mbed-drivers/mbed.h"
+#include "mri/include/buffer.h"
+#include "mri/include/packet.h"
+#include "mri/include/try_catch.h"
+#include "mri/architectures/armv7-m/armv7-m.h"
+#include "mri/architectures/armv7-m/debug_cm3.h"
 
-extern bool print_MriCore(uint32_t assign_val);
-extern bool mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx);
+typedef struct
+{
+    mriPacket   packet; 
+    mriBuffer   buffer; 
+    uint32_t    flags;  
+    uint8_t     signalValue;
+} MriCore;
+    
+typedef struct {
+    /*USART instance*/
+    RawSerial       *mri_serial;
+    uint8_t         serial_buffer[sizeof(RawSerial)];
+
+    /*Core state*/
+    MriCore g_mri;
+
+    /*ARMv7 Cortex-M State*/
+    CortexMState    __mriCortexMState;
+    const uint32_t  __mriCortexMFakeStack[8];
+
+    /*test*/
+    uint32_t val;
+} Debug_Context;
 
 
 
-#endif/*__UVISOR_DEBUG_BOX_H__*/
+#endif/*__UVISOR_DEBUG_CONTEXT_H__*/

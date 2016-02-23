@@ -27,7 +27,7 @@
 extern void printBits(size_t const size, void const * const ptr);
 /*
  * printBits usage example:
- * printBits(sizeof(uint32_t),(const void*)&(ctx->__mriCortexMState.flags));
+printBits(sizeof(uint32_t),(const void*)&(ctx->__mriCortexMState.flags));
  */
 
 /* Disable any macro used for errno and use the int global instead. */
@@ -122,6 +122,19 @@ static const char g_targetXml[] =
 void __mriExceptionHandler(void);
 
 
+static __INLINE void clearState(Debug_Context* const ctx)
+{
+    memset(&ctx->__mriCortexMState, 0, sizeof(ctx->__mriCortexMState));
+}
+
+
+
+static void configureDWTandFPB(void)
+{
+    enableDWTandITM();
+    initDWT();                                                                                                                                       
+    initFPB();
+}   
 
 static void clearSingleSteppingFlag(Debug_Context* const ctx)
 {
@@ -135,7 +148,15 @@ void Platform_DisableSingleStep(Debug_Context* const ctx)
     clearSingleSteppingFlag(ctx);
 }
 
-
+void __mriCortexMInit(Debug_Context* const ctx)
+{
+    clearState(ctx);
+    configureDWTandFPB();
+    //defaultSvcAndSysTickInterruptsToPriority1();
+    Platform_DisableSingleStep(ctx);
+    //clearMonitorPending();
+    //enableDebugMonitorAtPriority0(); 
+}
 
 
 

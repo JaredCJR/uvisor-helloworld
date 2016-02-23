@@ -21,6 +21,7 @@
 #include "debug_context.h"
 #include "debug_box_hw.h"
 #include "mri/include/platforms.h"
+#include "mri/architectures/armv7-m/armv7-m.h"
 
 void printBits(size_t const size, void const * const ptr);
 
@@ -103,18 +104,6 @@ static __INLINE void clearCoreStructure(void)
     memset(&uvisor_ctx->g_mri, 0, sizeof(uvisor_ctx->g_mri));
 }
 
-static __INLINE void clearState(void)
-{
-    memset(&uvisor_ctx->__mriCortexMState, 0, sizeof(uvisor_ctx->__mriCortexMState));
-}
-
-
-static void configureDWTandFPB(void)
-{   
-    enableDWTandITM();
-    initDWT();
-    initFPB();
-}
 
 
 UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *USARTx)
@@ -127,20 +116,15 @@ UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *
      */
     //__try
     //{
+    __mriCortexMInit(uvisor_ctx);
     //}
     //__catch
     //{
     //    return false;
     //}
 
-
-    clearState();
-    configureDWTandFPB();
-    //defaultSvcAndSysTickInterruptsToPriority1();
-    Platform_DisableSingleStep(uvisor_ctx);
-    //clearMonitorPending();
-    //enableDebugMonitorAtPriority0(); 
-
+    //defaultExternalInterruptsToPriority1();
+    //__mriStm32f429xxUart_Init(pParameterTokens);
     return true;
 }
 

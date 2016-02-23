@@ -19,6 +19,7 @@
 #ifndef _MRI_CORTEXM_H_
 #define _MRI_CORTEXM_H_
 
+
 /* Definitions used by C and Assembler code. */
 /* Flag bits used in CortexMState::flags field. */
 #define CORTEXM_FLAGS_ACTIVE_DEBUG          1
@@ -52,6 +53,7 @@
 #endif
 
 #include <stdint.h>
+
 
 /* NOTE: The MriExceptionHandler function is dependent on the layout of this structure.  It
          is also dictated by the version of gdb which supports the ARM processors.  It should only be changed if the

@@ -50,6 +50,6 @@ typedef struct {
     uint32_t val;
 } Debug_Context;
 
-
+void __mriCortexMInit(Debug_Context* const ctx);
 
 #endif/*__UVISOR_DEBUG_CONTEXT_H__*/

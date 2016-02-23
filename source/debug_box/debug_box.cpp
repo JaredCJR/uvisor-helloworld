@@ -20,6 +20,7 @@
 #include "uvisor-lib/uvisor-lib.h"
 #include "debug_context.h"
 #include "debug_box_hw.h"
+#include "mri/include/platforms.h"
 
 void printBits(size_t const size, void const * const ptr);
 
@@ -136,7 +137,7 @@ UVISOR_EXTERN bool __mri_Init(int baudrate,IRQn_Type USARTx_IRQn,USART_TypeDef *
     clearState();
     configureDWTandFPB();
     //defaultSvcAndSysTickInterruptsToPriority1();
-    //Platform_DisableSingleStep(&uvisor_ctx);
+    Platform_DisableSingleStep(uvisor_ctx);
     //clearMonitorPending();
     //enableDebugMonitorAtPriority0(); 
 

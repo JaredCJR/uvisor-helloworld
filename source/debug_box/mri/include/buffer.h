@@ -16,8 +16,8 @@
 */
 /*  'Class' which represents a text buffer.  Has routines to both extract and inject strings of various types into the
     buffer while verifying that no overflow takes place. */
-#ifndef _BUFFER_H_
-#define _BUFFER_H_
+#ifndef _MRI_BUFFER_H_
+#define _MRI_BUFFER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -75,4 +75,4 @@ int      __mriBuffer_MatchesString(Buffer* pBuffer, const char* pString, size_t 
 #define Buffer_IsNextCharEqualTo    __mriBuffer_IsNextCharEqualTo
 #define Buffer_MatchesString        __mriBuffer_MatchesString
 */
-#endif /* _BUFFER_H_ */
+#endif /* _MRI_BUFFER_H_ */

@@ -18,13 +18,16 @@
 #ifndef _DEBUG_CM3_H_
 #define _DEBUG_CM3_H_
 
-#include "../../../../yotta_modules/cmsis-core-stm32f4/cmsis-core-stm32f4/cmsis.h"
-#include <stdio.h>
+//#include "../../../../yotta_modules/cmsis-core-stm32f4/cmsis-core-stm32f4/cmsis.h"
+//#include <stdio.h>
 #include "../../include/try_catch.h"
+#include "mbed-drivers/mbed.h"
+#include "uvisor-lib/uvisor-lib.h"
 
 extern void printBits(size_t const size, void const * const ptr);
 
 /*uvisor macro*/
+#define CoreDebug_DEMCR 0xE000EDFC
 #define FPB_CTRL 0xE0002000
 #define EMPTY    0x0
 /*end of uvisor macro*/
@@ -110,7 +113,6 @@ static __INLINE void enableDWTandITM(void)
 {
     //CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA;
 
-#define CoreDebug_DEMCR 0xE000EDFC
     /*src_box, addr, val, op, mask*/
     uint32_t val = uvisor_read(debug_box,CoreDebug_DEMCR);
     val |= CoreDebug_DEMCR_TRCENA;
@@ -119,7 +121,10 @@ static __INLINE void enableDWTandITM(void)
 
 static __INLINE void disableSingleStep(void)
 {
-    CoreDebug->DEMCR &=  ~CoreDebug_DEMCR_MON_STEP;
+    //CoreDebug->DEMCR &=  ~CoreDebug_DEMCR_MON_STEP;
+    uint32_t val = uvisor_read(debug_box,CoreDebug_DEMCR);
+    val &= ~CoreDebug_DEMCR_MON_STEP;
+    uvisor_write(debug_box,CoreDebug_DEMCR,val);
 }
 
 static __INLINE void enableSingleStep(void)

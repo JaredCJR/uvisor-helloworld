@@ -154,7 +154,7 @@ void __mriCortexMInit(Debug_Context* const ctx)
     configureDWTandFPB();
     //defaultSvcAndSysTickInterruptsToPriority1();
     Platform_DisableSingleStep(ctx);
-    //clearMonitorPending();
+    clearMonitorPending();
     //enableDebugMonitorAtPriority0(); 
 }
 

@@ -134,7 +134,10 @@ static __INLINE void enableSingleStep(void)
 
 static __INLINE void clearMonitorPending(void)
 {
-    CoreDebug->DEMCR &= ~CoreDebug_DEMCR_MON_PEND;
+    //CoreDebug->DEMCR &= ~CoreDebug_DEMCR_MON_PEND;
+    uint32_t val = uvisor_read(debug_box,CoreDebug_DEMCR);
+    val &= ~CoreDebug_DEMCR_MON_PEND;
+    uvisor_write(debug_box,CoreDebug_DEMCR,val);
 }
 
 

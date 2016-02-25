@@ -269,7 +269,7 @@ static __INLINE void clearDWTComparators(void)
     uint32_t        comparatorCount;
     uint32_t        i;
     
-    comparatorCount = getDWTComparatorCount();//if DWT enabled,STM32F429 will get 4.
+    comparatorCount = getDWTComparatorCount();//STM32F429 will get 4.
     /*
     for (i = 0 ; i < comparatorCount ; i++)
     {
@@ -815,8 +815,8 @@ static __INLINE void clearFPBComparators(void)
     uint32_t  totalComparatorCount;
     uint32_t  i;
     
-    codeComparatorCount = getFPBCodeComparatorCount();//if FPB is enabled,STM32F429 will return 6
-    literalComparatorCount = getFPBLiteralComparatorCount();//if FPB is enabled,STM32F429 will return 2
+    codeComparatorCount = getFPBCodeComparatorCount();//STM32F429 will return 6
+    literalComparatorCount = getFPBLiteralComparatorCount();//STM32F429 will return 2
     totalComparatorCount = codeComparatorCount + literalComparatorCount;
     for (i = 0 ; i < totalComparatorCount ; i++)
     {

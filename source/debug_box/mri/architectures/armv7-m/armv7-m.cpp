@@ -132,7 +132,7 @@ static __INLINE void clearState(Debug_Context* const ctx)
 static void configureDWTandFPB(void)
 {
     enableDWTandITM();
-    initDWT();                                                                                                                                       
+    initDWT(); 
     initFPB();
 }   
 

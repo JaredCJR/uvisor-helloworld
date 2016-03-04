@@ -18,8 +18,6 @@
 #ifndef _DEBUG_CM3_H_
 #define _DEBUG_CM3_H_
 
-//#include "../../../../yotta_modules/cmsis-core-stm32f4/cmsis-core-stm32f4/cmsis.h"
-//#include <stdio.h>
 #include "../../include/try_catch.h"
 #include "mbed-drivers/mbed.h"
 #include "uvisor-lib/uvisor-lib.h"
@@ -113,10 +111,9 @@ static __INLINE void enableDWTandITM(void)
 {
     //CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA;
 
-    /*src_box, addr, val, op, mask*/
-    uint32_t val = uvisor_read(debug_box,CoreDebug_DEMCR);
-    val |= CoreDebug_DEMCR_TRCENA;
-    uvisor_write(debug_box,CoreDebug_DEMCR,val,UVISOR_OP_OR,CoreDebug_DEMCR_TRCENA);
+    uint32_t val = uvisor_read32((uint32_t*)&CoreDebug->DEMCR);
+    //val |= CoreDebug_DEMCR_TRCENA;
+    //uvisor_write32((uint32_t*)CoreDebug->DEMCR,val);
 }
 
 static __INLINE void disableSingleStep(void)

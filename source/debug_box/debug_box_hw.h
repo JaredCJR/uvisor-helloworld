@@ -34,6 +34,9 @@
         {GPIOB,     sizeof(*GPIOB),     UVISOR_TACLDEF_PERIPH}, \
         {RCC,       sizeof(*RCC),       UVISOR_TACLDEF_PERIPH}, \
         {USART3,    sizeof(*USART3),    UVISOR_TACLDEF_PERIPH}, \
+        /*
+        {CoreDebug, sizeof(*CoreDebug), UVISOR_TACLDEF_PERIPH}, \
+        */
     }
 
 

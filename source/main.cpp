@@ -22,6 +22,8 @@
 #include "box-challenge.h"
 #include "box-debug.h"
 #include "btn.h"
+#include "my_debugBox/CrashCatcher.h"
+
 
 using mbed::util::FunctionPointer0;
 
@@ -89,4 +91,20 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("main unprivileged box configured\n\r");
+
+    pc.printf("CrashCatcher stack:\n\r");
+    pc.printf("lr=%p\n\r",g_crashCatcherStack->stack[100]);
+    pc.printf("r11=%p\n\r",g_crashCatcherStack->stack[99]);
+    pc.printf("r10=%p\n\r",g_crashCatcherStack->stack[98]);
+    pc.printf("r9=%p\n\r",g_crashCatcherStack->stack[97]);
+    pc.printf("r8=%p\n\r",g_crashCatcherStack->stack[96]);
+    pc.printf("r7=%p\n\r",g_crashCatcherStack->stack[95]);
+    pc.printf("r6=%p\n\r",g_crashCatcherStack->stack[94]);
+    pc.printf("r5=%p\n\r",g_crashCatcherStack->stack[93]);
+    pc.printf("r4=%p\n\r",g_crashCatcherStack->stack[92]);
+    pc.printf("msp=%p\n\r",g_crashCatcherStack->stack[91]);
+    pc.printf("psp=%p\n\r",g_crashCatcherStack->stack[90]);
+    pc.printf("xPSR=%p\n\r",g_crashCatcherStack->stack[89]);
+
+    CrashCatcher_Entry();
 }

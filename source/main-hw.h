@@ -20,6 +20,7 @@
 /* the vector containing the challenge is shared with the push-button ISR, so
  * that it can attempt to access it from an IRQ context */
 #include "box-challenge.h"
+#include "my_debugBox/CrashCatcher.h"
 extern uint8_t g_challenge[CHALLENGE_SIZE];
 
 /* target specifc ACLs */
@@ -72,6 +73,7 @@ extern uint8_t g_challenge[CHALLENGE_SIZE];
         {PWR,    sizeof(*PWR),    UVISOR_TACLDEF_PERIPH}, \
         {USART1, sizeof(*USART1), UVISOR_TACLDEF_PERIPH}, \
         {(void *) 0x42470000, 0x1000, UVISOR_TACLDEF_PERIPH}, \
+        {g_crashCatcherStack, sizeof(*USART1), UVISOR_TACLDEF_PERIPH}, \
     }
 
 #elif  defined(TARGET_LIKE_EFM32GG_STK) \

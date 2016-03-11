@@ -92,7 +92,7 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("main unprivileged box configured\n\r");
-
+/*
     pc.printf("CrashCatcher stack:\n\r");
     pc.printf("lr=%p\n\r",g_crashCatcherStack->stack[100]);
     pc.printf("r11=%p\n\r",g_crashCatcherStack->stack[99]);
@@ -106,7 +106,7 @@ void app_start(int, char *[])
     pc.printf("msp=%p\n\r",g_crashCatcherStack->stack[91]);
     pc.printf("psp=%p\n\r",g_crashCatcherStack->stack[90]);
     pc.printf("xPSR=%p\n\r",g_crashCatcherStack->stack[89]);
-
+*/
     CrashCatcher_Entry();
 }
 

@@ -85,6 +85,47 @@ static void dumpSignature(const Object* pObject)
 }
 
 
+static void dumpFlags(const Object* pObject)                                                                                                
+{
+    CrashCatcher_DumpMemory(&pObject->flags, CRASH_CATCHER_BYTE, sizeof(pObject->flags));
+}
+
+
+static void dumpR0toR3(const Object* pObject)
+{
+    CrashCatcher_DumpMemory(&pObject->pSP->r0, CRASH_CATCHER_BYTE, 4 * sizeof(uint32_t));
+}
+
+
+static void dumpR4toR11(const Object* pObject)                                                                                              
+{
+    CrashCatcher_DumpMemory(&pObject->pExceptionRegisters->r4, CRASH_CATCHER_BYTE, (11 - 4 + 1) * sizeof(uint32_t));
+}
+
+
+static void dumpR12(const Object* pObject)
+{
+    CrashCatcher_DumpMemory(&pObject->pSP->r12, CRASH_CATCHER_BYTE, sizeof(uint32_t));
+}
+
+static void dumpSP(const Object* pObject)                                                                                                   
+{
+    CrashCatcher_DumpMemory(&pObject->sp, CRASH_CATCHER_BYTE, sizeof(uint32_t));
+}
+
+
+static void dumpLR_PC_PSR(const Object* pObject)
+{
+    CrashCatcher_DumpMemory(&pObject->pSP->lr, CRASH_CATCHER_BYTE, 3 * sizeof(uint32_t));
+}
+
+
+static void dumpExceptionPSR(const Object* pObject)                                                                                         
+{
+    CrashCatcher_DumpMemory(&pObject->pExceptionRegisters->exceptionPSR, CRASH_CATCHER_BYTE, sizeof(uint32_t));
+}
+
+
 void CrashCatcher_Entry(void)
 {
     const CrashCatcherExceptionRegisters* pExceptionRegisters = (const CrashCatcherExceptionRegisters*)g_crashCatcherStack;
@@ -98,16 +139,21 @@ void CrashCatcher_Entry(void)
         setStackSentinel();
         CrashCatcher_DumpStart();
         dumpSignature(&object);
-        /*
         dumpFlags(&object);
+/*
         dumpR0toR3(&object);
         dumpR4toR11(&object);
         dumpR12(&object);
         dumpSP(&object);
         dumpLR_PC_PSR(&object);
         dumpExceptionPSR(&object);
+*/
+/*Floating Points is not implemented in uVisor yet.*/
+/*
         if (object.flags & CRASH_CATCHER_FLAGS_FLOATING_POINT)
             dumpFloatingPointRegisters(&object);
+*/
+/*
         dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
         if (!isARMv6MDevice())
             dumpFaultStatusRegisters();

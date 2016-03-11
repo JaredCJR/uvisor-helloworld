@@ -32,6 +32,10 @@ typedef struct
 /* Flag to indicate that 16 single-precision floating point registers and FPSCR will follow integer registers. */
 #define CRASH_CATCHER_FLAGS_FLOATING_POINT (1 << 0)
 
+/* This magic value will be found as the last word in a crash dump if the fault handler overflowed the stack while
+   generating the crash dump. */
+#define CRASH_CATCHER_STACK_SENTINEL 0xACCE55ED
+
 
 /* This structure contains the integer registers that are automatically stacked by Cortex-M processor when it enters
    an exception handler. */

@@ -1,5 +1,7 @@
 #include "CrashCatcher.h"
-
+#include "mbed-drivers/mbed.h"
+#include "uvisor-lib/uvisor-lib.h"
+#include "CatcherDump.h"
 
 static uint32_t getAddressOfExceptionStack(const CrashCatcherExceptionRegisters* pExceptionRegisters) 
 {
@@ -67,18 +69,25 @@ static void initFloatingPointFlag(Object* pObject)
         pObject->flags |= CRASH_CATCHER_FLAGS_FLOATING_POINT;
 }
 
-void CrashCatcher_Entry()
+static void setStackSentinel(void)
+{
+    g_crashCatcherStack->stack[0] = CRASH_CATCHER_STACK_SENTINEL; 
+}
+
+
+void CrashCatcher_Entry(void)
 {
     const CrashCatcherExceptionRegisters* pExceptionRegisters = (const CrashCatcherExceptionRegisters*)g_crashCatcherStack;
 
     Object object = initStackPointers(pExceptionRegisters);
     advanceStackPointerToValueBeforeException(&object);
     initFloatingPointFlag(&object);
-/*
-    do
+
+    //do
     {
         setStackSentinel();
         CrashCatcher_DumpStart();
+/*
         dumpSignature(&object);
         dumpFlags(&object);
         dumpR0toR3(&object);
@@ -93,7 +102,8 @@ void CrashCatcher_Entry()
         if (!isARMv6MDevice())
             dumpFaultStatusRegisters();
         checkStackSentinelForStackOverflow();
-    }
-    while (CrashCatcher_DumpEnd() == CRASH_CATCHER_TRY_AGAIN);
 */
+    }
+    //while (CrashCatcher_DumpEnd() == CRASH_CATCHER_TRY_AGAIN);
+
 }

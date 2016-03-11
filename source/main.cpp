@@ -23,6 +23,7 @@
 #include "box-debug.h"
 #include "btn.h"
 #include "my_debugBox/CrashCatcher.h"
+#include "my_debugBox/CatcherDump.h"
 
 
 using mbed::util::FunctionPointer0;
@@ -107,4 +108,12 @@ void app_start(int, char *[])
     pc.printf("xPSR=%p\n\r",g_crashCatcherStack->stack[89]);
 
     CrashCatcher_Entry();
+}
+
+void cC_printf(const char * format,...)
+{    
+    va_list args;
+    va_start(args, format);
+    pc.vprintf(format, args);
+    va_end(args);
 }

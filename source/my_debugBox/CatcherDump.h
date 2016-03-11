@@ -6,6 +6,7 @@
 
 void cC_printf(const char * format,...);
 void CrashCatcher_DumpStart(void);
+void CrashCatcher_DumpMemory(const void* pvMemory, CrashCatcherElementSizes elementSize, size_t elementCount);
 
 
 

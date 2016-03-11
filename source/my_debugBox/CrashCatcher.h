@@ -37,6 +37,24 @@ typedef struct
 #define CRASH_CATCHER_STACK_SENTINEL 0xACCE55ED
 
 
+/* The crash dump start with a four byte header.  The first two bytes are "cC", the third byte is the major version
+   number, and the fourth bytes is the minor version number. */
+#define CRASH_CATCHER_SIGNATURE_BYTE0 'c'                                                                                           
+#define CRASH_CATCHER_SIGNATURE_BYTE1 'C'
+#define CRASH_CATCHER_VERSION_MAJOR   2
+#define CRASH_CATCHER_VERSION_MINOR   0
+
+/* Supported element sizes to be used with CrashCatcher_DumpMemory calls. */
+typedef enum
+{   
+    CRASH_CATCHER_BYTE = 1,
+    CRASH_CATCHER_HALFWORD = 2,
+    CRASH_CATCHER_WORD = 4
+} CrashCatcherElementSizes;
+
+
+
+
 /* This structure contains the integer registers that are automatically stacked by Cortex-M processor when it enters
    an exception handler. */
 typedef struct

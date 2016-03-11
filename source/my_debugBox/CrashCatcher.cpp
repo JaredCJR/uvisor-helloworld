@@ -75,6 +75,16 @@ static void setStackSentinel(void)
 }
 
 
+static void dumpSignature(const Object* pObject)                                                                                    
+{
+    static const uint8_t signature[4] = {CRASH_CATCHER_SIGNATURE_BYTE0,
+                                         CRASH_CATCHER_SIGNATURE_BYTE1,
+                                         CRASH_CATCHER_VERSION_MAJOR,
+                                         CRASH_CATCHER_VERSION_MINOR};
+    CrashCatcher_DumpMemory(signature, CRASH_CATCHER_BYTE, sizeof(signature));
+}
+
+
 void CrashCatcher_Entry(void)
 {
     const CrashCatcherExceptionRegisters* pExceptionRegisters = (const CrashCatcherExceptionRegisters*)g_crashCatcherStack;
@@ -87,8 +97,8 @@ void CrashCatcher_Entry(void)
     {
         setStackSentinel();
         CrashCatcher_DumpStart();
-/*
         dumpSignature(&object);
+        /*
         dumpFlags(&object);
         dumpR0toR3(&object);
         dumpR4toR11(&object);

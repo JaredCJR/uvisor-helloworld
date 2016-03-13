@@ -25,12 +25,12 @@ static const void* uint32AddressToPointer(uint32_t address)
 }
 
 
-static Object initStackPointers(const CrashCatcherExceptionRegisters* pExceptionRegisters)  
+static Object initStackPointers(const CrashCatcherExceptionRegisters* pExceptionRegisters,const CrashCatcherStackedRegisters* pStackedRegisters)
 {
     Object object;
     object.pExceptionRegisters = pExceptionRegisters;
     object.sp = getAddressOfExceptionStack(pExceptionRegisters);
-    object.pSP = (const CrashCatcherStackedRegisters*)uint32AddressToPointer(object.sp);
+    object.pSP = (const CrashCatcherStackedRegisters*)uint32AddressToPointer((uint32_t)pStackedRegisters);
     object.flags = 0;
     return object;
 }
@@ -46,7 +46,9 @@ static void advanceStackPointerToValueBeforeException(Object* pObject)
     pObject->sp += 8 * sizeof(uint32_t);
     /* ARMv7-M processors can also push 16 single-precision floating point registers, FPSCR and a padding word. */
     if (areFloatingPointRegistersAutoStacked(pObject))
+    {
         pObject->sp += (16 + 1 + 1) * sizeof(uint32_t);
+    }
     /* Cortex-M processor may also have had to force 8-byte alignment before auto stacking registers. */
     pObject->sp |= (pObject->pSP->psr & PSR_STACK_ALIGN) ? 4 : 0;
 }
@@ -66,7 +68,9 @@ static int areFloatingPointCoprocessorsEnabled(void)
 static void initFloatingPointFlag(Object* pObject)                                                                                     
 {
     if (areFloatingPointCoprocessorsEnabled())
+    {
         pObject->flags |= CRASH_CATCHER_FLAGS_FLOATING_POINT;
+    }
 }
 
 static void setStackSentinel(void)
@@ -128,9 +132,12 @@ static void dumpExceptionPSR(const Object* pObject)
 
 void CrashCatcher_Entry(void)
 {
-    const CrashCatcherExceptionRegisters* pExceptionRegisters = (const CrashCatcherExceptionRegisters*)g_crashCatcherStack;
+    const CrashCatcherExceptionRegisters* pExceptionRegisters = 
+          (const CrashCatcherExceptionRegisters*)(&g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-12]);
+    const CrashCatcherStackedRegisters* pStackedRegisters = 
+          (const CrashCatcherStackedRegisters*)(&g_crashCatcherStack->auto_stack[0]);
 
-    Object object = initStackPointers(pExceptionRegisters);
+    Object object = initStackPointers(pExceptionRegisters,pStackedRegisters);
     advanceStackPointerToValueBeforeException(&object);
     initFloatingPointFlag(&object);
 

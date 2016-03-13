@@ -66,6 +66,13 @@ static void retry_secret(void)
 
 void app_start(int, char *[])
 {
+    /* clear CrashCatcher stack*/
+    for(int i =0;i<CRASH_CATCHER_STACK_WORD_COUNT;i++)
+    {
+        g_crashCatcherStack->stack[i] = 0;
+        g_crashCatcherStack->auto_stack[i] = 0;
+    }
+
     /* set the console baud-rate */
     pc.baud(115200);
 
@@ -92,22 +99,31 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("main unprivileged box configured\n\r");
-/*
+
     pc.printf("CrashCatcher stack:\n\r");
-    pc.printf("lr=%p\n\r",g_crashCatcherStack->stack[100]);
-    pc.printf("r11=%p\n\r",g_crashCatcherStack->stack[99]);
-    pc.printf("r10=%p\n\r",g_crashCatcherStack->stack[98]);
-    pc.printf("r9=%p\n\r",g_crashCatcherStack->stack[97]);
-    pc.printf("r8=%p\n\r",g_crashCatcherStack->stack[96]);
-    pc.printf("r7=%p\n\r",g_crashCatcherStack->stack[95]);
-    pc.printf("r6=%p\n\r",g_crashCatcherStack->stack[94]);
-    pc.printf("r5=%p\n\r",g_crashCatcherStack->stack[93]);
-    pc.printf("r4=%p\n\r",g_crashCatcherStack->stack[92]);
-    pc.printf("msp=%p\n\r",g_crashCatcherStack->stack[91]);
-    pc.printf("psp=%p\n\r",g_crashCatcherStack->stack[90]);
-    pc.printf("xPSR=%p\n\r",g_crashCatcherStack->stack[89]);
-*/
-    CrashCatcher_Entry();
+    pc.printf("lr=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-1]);
+    pc.printf("r11=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-2]);
+    pc.printf("r10=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-3]);
+    pc.printf("r9=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-4]);
+    pc.printf("r8=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-5]);
+    pc.printf("r7=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-6]);
+    pc.printf("r6=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-7]);
+    pc.printf("r5=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-8]);
+    pc.printf("r4=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-9]);
+    pc.printf("msp=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-10]);
+    pc.printf("psp=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-11]);
+    pc.printf("xPSR=%p\n\r",g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-12]);
+
+    pc.printf("PSR=%p\n\r",g_crashCatcherStack->auto_stack[7]);
+    pc.printf("pc=%p\n\r",g_crashCatcherStack->auto_stack[6]);
+    pc.printf("lr=%p\n\r",g_crashCatcherStack->auto_stack[5]);
+    pc.printf("r12=%p\n\r",g_crashCatcherStack->auto_stack[4]);
+    pc.printf("r3=%p\n\r",g_crashCatcherStack->auto_stack[3]);
+    pc.printf("r2=%p\n\r",g_crashCatcherStack->auto_stack[2]);
+    pc.printf("r1=%p\n\r",g_crashCatcherStack->auto_stack[1]);
+    pc.printf("r0=%p\n\r",g_crashCatcherStack->auto_stack[0]);
+
+    //CrashCatcher_Entry();
 }
 
 void cC_printf(const char * format,...)

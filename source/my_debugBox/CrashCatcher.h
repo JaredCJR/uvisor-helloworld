@@ -102,6 +102,21 @@ typedef struct
     uint32_t                              flags; 
 } Object;
 
-void CrashCatcher_Entry(void);
+
+/* An array of these structures is returned from CrashCatcher_GetMemoryRegions() to indicate what regions of memory
+   should be dumped as part of the crash dump.  The last entry should contain a starting address of 0xFFFFFFFF to
+   indicate that the end of the list has been encountered. */
+typedef struct
+{
+    /* The first address of the element to be dumped for this region of memory. */
+    /* The last region in the array return from CrashCatcher_GetMemoryRegions() must set this to 0xFFFFFFFF */
+    uint32_t                 startAddress;
+    /* Stop dumping the region once this address is encountered.  The dump isn't inclusive of this address. */
+    /* It must be greater than startAddress. */
+    uint32_t                 endAddress;
+    /* This should be set to CRASH_CATCHER_BYTE except for peripheral registers which don't support 8-bit reads. */
+    CrashCatcherElementSizes elementSize;
+} CrashCatcherMemoryRegion;
+
 
 #endif /* end of __CrashCatcher_H */

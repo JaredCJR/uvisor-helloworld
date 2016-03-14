@@ -84,3 +84,9 @@ void CrashCatcher_DumpMemory(const void* pvMemory, CrashCatcherElementSizes elem
     cC_printf("\r\n");
 }
 
+
+void targetACLs_register(UvisorBoxAclItem *items,uint32_t num,ACLtoCrashCatcherMemoryRegion* warehouse)
+{
+    warehouse->ACLs = items;
+    warehouse->sizeofACLs = num;
+}

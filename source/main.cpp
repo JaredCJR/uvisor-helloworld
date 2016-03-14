@@ -22,9 +22,7 @@
 #include "box-challenge.h"
 #include "box-debug.h"
 #include "btn.h"
-#include "my_debugBox/CrashCatcher.h"
 #include "my_debugBox/CatcherDump.h"
-
 
 using mbed::util::FunctionPointer0;
 
@@ -36,6 +34,9 @@ UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
 
 DigitalOut led(MAIN_LED);
 Serial pc(STDIO_UART_TX, STDIO_UART_RX);
+
+/*CrashCatcher warehouse for ACL*/
+ACLtoCrashCatcherMemoryRegion ACLs_warehouse_CrashCatcher;
 
 uint8_t g_challenge[CHALLENGE_SIZE];
 minar::Scheduler *g_scheduler;
@@ -72,6 +73,8 @@ void app_start(int, char *[])
         g_crashCatcherStack->stack[i] = 0;
         g_crashCatcherStack->auto_stack[i] = 0;
     }
+    /*register the ACLs for CrashCatcher*/
+    targetACLs_register((UvisorBoxAclItem *)&g_main_acl, 12 ,&ACLs_warehouse_CrashCatcher);
 
     /* set the console baud-rate */
     pc.baud(115200);
@@ -133,3 +136,16 @@ void cC_printf(const char * format,...)
     pc.vprintf(format, args);
     va_end(args);
 }
+
+/* Let CrashCatcher know what RAM contents should be part of crash dump.
+ * The last "regions" must end with "{0xFFFFFFFF, 0xFFFFFFFF}"
+ */
+extern "C" const CrashCatcherMemoryRegion* CrashCatcher_GetMemoryRegions(void) 
+{ 
+    static const CrashCatcherMemoryRegion regions[] = { 
+                                                        {0xFFFFFFFF, 0xFFFFFFFF, CRASH_CATCHER_BYTE}
+                                                      };
+    return regions;
+}
+
+

@@ -132,9 +132,46 @@ static void dumpLR_PC_PSR(const Object* pObject)
 }
 
 
-static void dumpExceptionPSR(const Object* pObject)                                                                                         
+static void dumpExceptionPSR(const Object* pObject)   
 {
     CrashCatcher_DumpMemory(&pObject->pExceptionRegisters->exceptionPSR, CRASH_CATCHER_BYTE, sizeof(uint32_t));
+}
+
+
+static void dumpMemoryRegions(const CrashCatcherMemoryRegion* pRegion)    
+{
+    while (pRegion && pRegion->startAddress != 0xFFFFFFFF)
+    {
+        /* Just dump the two addresses in pRegion.  The element size isn't required. */
+        CrashCatcher_DumpMemory(pRegion, CRASH_CATCHER_BYTE, 2 * sizeof(uint32_t));
+        CrashCatcher_DumpMemory(uint32AddressToPointer(pRegion->startAddress),
+                                pRegion->elementSize,
+                                (pRegion->endAddress - pRegion->startAddress) / pRegion->elementSize);
+        pRegion++;
+    }
+}
+
+
+static const CrashCatcherMemoryRegion* CrashCatcher_getACLmemoryRegions(ACLtoCrashCatcherMemoryRegion* warehouse) 
+{
+    uint32_t num_ACLs = warehouse->sizeofACLs;
+    static CrashCatcherMemoryRegion* ACL_ccRegions;
+
+    /*The last array for putting 0xFFFFFFFF for stop output*/
+    ACL_ccRegions = (CrashCatcherMemoryRegion*)malloc( (num_ACLs+1)*sizeof(CrashCatcherMemoryRegion) );
+
+    for(uint32_t i = 0;i<num_ACLs;i++)
+    {
+        ACL_ccRegions[i].startAddress = (uint32_t)( warehouse->ACLs[i].param1);
+        ACL_ccRegions[i].endAddress = ACL_ccRegions[i].startAddress + warehouse->ACLs[i].param2;
+        ACL_ccRegions[i].elementSize = CRASH_CATCHER_BYTE;
+    }
+    /*The last array set as 0xFFFFFFFF for stop output*/
+    ACL_ccRegions[num_ACLs].startAddress = 0xFFFFFFFF;
+    ACL_ccRegions[num_ACLs].endAddress = 0xFFFFFFFF;
+    ACL_ccRegions[num_ACLs].elementSize = CRASH_CATCHER_BYTE;
+
+    return ACL_ccRegions;
 }
 
 
@@ -163,13 +200,15 @@ void CrashCatcher_Entry(void)
         dumpLR_PC_PSR(&object);
         dumpExceptionPSR(&object);
 
-/*Floating Points resvent is not able to be accessed in uVisor now,so we assume that we does not use FPU.*/
+/*FPU relevant are not able to be accessed in uVisor APIs now,so we assume that we does not use FPU.*/
 /*
         if (object.flags & CRASH_CATCHER_FLAGS_FLOATING_POINT)
         {
             dumpFloatingPointRegisters(&object);
         }
 */
+        /* Dump regions of ACLs*/
+        dumpMemoryRegions( CrashCatcher_getACLmemoryRegions( &ACLs_warehouse_CrashCatcher) );
 /*
         dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
         if (!isARMv6MDevice())

@@ -19,9 +19,14 @@ static const void* uint32AddressToPointer(uint32_t address)
     uint64_t g_crashCatcherTestBaseAddress;
 
     if (sizeof(uint32_t*) == 8)
+    {
+        /* g_crashCatcherTestBaseAddress is currently unused */
         return (const void*)(unsigned long)((uint64_t)address | g_crashCatcherTestBaseAddress);
+    }
     else
+    {
         return (const void*)(unsigned long)address;
+    }
 }
 
 
@@ -56,13 +61,16 @@ static void advanceStackPointerToValueBeforeException(Object* pObject)
 static int areFloatingPointCoprocessorsEnabled(void)
 {
     /* The unit tests can point the core to a fake location for the Coprocessor Access Control Register. */
-    /*May Cause MPU fault , but uVisor does not protecting FPU currently! */
+    /* uVisor does not support to access system registers right now! */
+    /*
     uint32_t* g_pCrashCatcherCoprocessorAccessControlRegister = (uint32_t*)0xE000ED88;
 
     static const uint32_t coProcessor10and11EnabledBits = 5 << 20;
     uint32_t              coprocessorAccessControl = *g_pCrashCatcherCoprocessorAccessControlRegister;                                 
 
     return (coprocessorAccessControl & (coProcessor10and11EnabledBits)) == coProcessor10and11EnabledBits;
+    */
+    return 0;
 }
 
 static void initFloatingPointFlag(Object* pObject)                                                                                     

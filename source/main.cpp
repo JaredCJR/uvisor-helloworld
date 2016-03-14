@@ -123,7 +123,7 @@ void app_start(int, char *[])
     pc.printf("r1=%p\n\r",g_crashCatcherStack->auto_stack[1]);
     pc.printf("r0=%p\n\r",g_crashCatcherStack->auto_stack[0]);
 
-    //CrashCatcher_Entry();
+    CrashCatcher_Entry();
 }
 
 void cC_printf(const char * format,...)

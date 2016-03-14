@@ -87,7 +87,7 @@ static void setStackSentinel(void)
 }
 
 
-static void dumpSignature(const Object* pObject)                                                                                    
+static void dumpSignature(void)                                                                                    
 {
     static const uint8_t signature[4] = {CRASH_CATCHER_SIGNATURE_BYTE0,
                                          CRASH_CATCHER_SIGNATURE_BYTE1,
@@ -147,26 +147,28 @@ void CrashCatcher_Entry(void)
 
     Object object = initStackPointers(pExceptionRegisters,pStackedRegisters);
     advanceStackPointerToValueBeforeException(&object);
+/*Floating Points resvent is not able to be accessed in uVisor now,so we assume that we does not use FPU.*/
     initFloatingPointFlag(&object);
 
     //do
     {
         setStackSentinel();
         CrashCatcher_DumpStart();
-        dumpSignature(&object);
+        dumpSignature();
         dumpFlags(&object);
-/*
         dumpR0toR3(&object);
         dumpR4toR11(&object);
         dumpR12(&object);
         dumpSP(&object);
         dumpLR_PC_PSR(&object);
         dumpExceptionPSR(&object);
-*/
-/*Floating Points is not implemented in uVisor yet.*/
+
+/*Floating Points resvent is not able to be accessed in uVisor now,so we assume that we does not use FPU.*/
 /*
         if (object.flags & CRASH_CATCHER_FLAGS_FLOATING_POINT)
+        {
             dumpFloatingPointRegisters(&object);
+        }
 */
 /*
         dumpMemoryRegions(CrashCatcher_GetMemoryRegions());

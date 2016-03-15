@@ -200,6 +200,16 @@ static void dumpFaultStatusRegisters(const CrashCatcherFaultStatusRegisters* pFa
 }
 
 
+static void checkStackSentinelForStackOverflow(void) 
+{
+    if ( g_crashCatcherStack->stack[0] != CRASH_CATCHER_STACK_SENTINEL)
+    {
+        uint8_t value[4] = {0xAC, 0xCE, 0x55, 0xED};
+        CrashCatcher_DumpMemory(value, CRASH_CATCHER_BYTE, sizeof(value));
+    }
+}
+
+
 void CrashCatcher_Entry(void)
 {
     const CrashCatcherExceptionRegisters* pExceptionRegisters = 
@@ -215,7 +225,6 @@ void CrashCatcher_Entry(void)
     /*Floating Points resvent is not able to be accessed in uVisor now,so we assume that we does not use FPU.*/
     initFloatingPointFlag(&object);
 
-    //do
     {
         setStackSentinel();
         CrashCatcher_DumpStart();
@@ -241,8 +250,7 @@ void CrashCatcher_Entry(void)
         dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
         
         dumpFaultStatusRegisters(pFaultStatusRegisters);
-        //checkStackSentinelForStackOverflow();
+        checkStackSentinelForStackOverflow();
     }
-    //while (CrashCatcher_DumpEnd() == CRASH_CATCHER_TRY_AGAIN);
 
 }

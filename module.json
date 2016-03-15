@@ -1,6 +1,6 @@
 {
   "name": "uvisor-helloworld",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "description": "Hello world example with uVisor enabled",
   "keywords": [],
   "author": "Alessandro Angelino <alessandro.angelino@arm.com>",
@@ -16,8 +16,8 @@
     }
   ],
   "dependencies": {
-    "uvisor-lib": "^1.0.0",
-    "mbed-drivers": "*"
+    "uvisor-lib": "^2.0.0",
+    "mbed-drivers": "^1.0.0"
   },
   "targetDependencies": {},
   "bin": "./source"

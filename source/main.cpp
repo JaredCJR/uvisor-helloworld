@@ -71,10 +71,19 @@ void app_start(int, char *[])
     for(int i =0;i<CRASH_CATCHER_STACK_WORD_COUNT;i++)
     {
         g_crashCatcherStack->stack[i] = 0;
+    }
+    for(int i =0;i<CRASH_CATCHER_AUTO_STACKED_WORD_COUNT;i++)
+    {
         g_crashCatcherStack->auto_stack[i] = 0;
     }
+    for(int i =0;i<CRASH_CATCHER_FAULT_REGISTERS_WORD_COUNT;i++)
+    {
+        g_crashCatcherStack->fault_status[i] = 0;
+    }
+
     /*register the ACLs for CrashCatcher*/
     targetACLs_register((UvisorBoxAclItem *)&g_main_acl, 12 ,&ACLs_warehouse_CrashCatcher);
+
 
     /* set the console baud-rate */
     pc.baud(115200);

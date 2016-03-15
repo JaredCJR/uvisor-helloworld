@@ -142,7 +142,7 @@ static void dumpMemoryRegions(const CrashCatcherMemoryRegion* pRegion)
 {
     while (pRegion && pRegion->startAddress != 0xFFFFFFFF)
     {
-        /* Just dump the two addresses in pRegion.  The element size isn't required. */
+        /* Just dump the start&end addresses in pRegion.  The element size isn't required. */
         CrashCatcher_DumpMemory(pRegion, CRASH_CATCHER_BYTE, 2 * sizeof(uint32_t));
         CrashCatcher_DumpMemory(uint32AddressToPointer(pRegion->startAddress),
                                 pRegion->elementSize,
@@ -174,6 +174,31 @@ static const CrashCatcherMemoryRegion* CrashCatcher_getACLmemoryRegions(ACLtoCra
     return ACL_ccRegions;
 }
 
+static void dumpFaultStatusMemoryRegions(const CrashCatcherMemoryRegion* pRegion)    
+{
+    /*We mock the behavior as we directly access the Fault Status Registers*/
+    uint32_t ccFaultStatusRegisters_start = (uint32_t)0xE000ED28;
+    CrashCatcherMemoryRegion mock_region = {ccFaultStatusRegisters_start,ccFaultStatusRegisters_start+sizeof(CrashCatcherFaultStatusRegisters),pRegion->elementSize};
+    while (pRegion && pRegion->startAddress != 0xFFFFFFFF)
+    {
+        /* Just dump the start&end addresses in pRegion.  The element size isn't required. */
+        CrashCatcher_DumpMemory(&mock_region, CRASH_CATCHER_BYTE, 2 * sizeof(uint32_t));
+        CrashCatcher_DumpMemory(uint32AddressToPointer(pRegion->startAddress),
+                                pRegion->elementSize,
+                                (pRegion->endAddress - pRegion->startAddress) / pRegion->elementSize);
+        pRegion++;
+    }
+}
+
+static void dumpFaultStatusRegisters(const CrashCatcherFaultStatusRegisters* pFaultStatusRegisters)
+{                                                                                                                                 
+    CrashCatcherMemoryRegion faultStatusRegion[] = { {(uint32_t)pFaultStatusRegisters,
+                                                      (uint32_t)pFaultStatusRegisters + sizeof(CrashCatcherFaultStatusRegisters),
+                                                      CRASH_CATCHER_WORD} ,
+                                                      {0xFFFFFFFF, 0xFFFFFFFF, CRASH_CATCHER_BYTE}};
+    dumpFaultStatusMemoryRegions(faultStatusRegion);
+}
+
 
 void CrashCatcher_Entry(void)
 {
@@ -181,10 +206,13 @@ void CrashCatcher_Entry(void)
           (const CrashCatcherExceptionRegisters*)(&g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-12]);
     const CrashCatcherStackedRegisters* pStackedRegisters = 
           (const CrashCatcherStackedRegisters*)(&g_crashCatcherStack->auto_stack[0]);
+    /*When uVisor API is available to access the system registers,we can use more intuitive methods*/
+    const CrashCatcherFaultStatusRegisters* pFaultStatusRegisters = 
+          (const CrashCatcherFaultStatusRegisters*)(&g_crashCatcherStack->fault_status[0]);
 
     Object object = initStackPointers(pExceptionRegisters,pStackedRegisters);
     advanceStackPointerToValueBeforeException(&object);
-/*Floating Points resvent is not able to be accessed in uVisor now,so we assume that we does not use FPU.*/
+    /*Floating Points resvent is not able to be accessed in uVisor now,so we assume that we does not use FPU.*/
     initFloatingPointFlag(&object);
 
     //do
@@ -209,12 +237,11 @@ void CrashCatcher_Entry(void)
 */
         /* Dump regions of ACLs*/
         dumpMemoryRegions( CrashCatcher_getACLmemoryRegions( &ACLs_warehouse_CrashCatcher) );
-/*
+        /* Dump Memories that you want*/
         dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
-        if (!isARMv6MDevice())
-            dumpFaultStatusRegisters();
-        checkStackSentinelForStackOverflow();
-*/
+        
+        dumpFaultStatusRegisters(pFaultStatusRegisters);
+        //checkStackSentinelForStackOverflow();
     }
     //while (CrashCatcher_DumpEnd() == CRASH_CATCHER_TRY_AGAIN);
 

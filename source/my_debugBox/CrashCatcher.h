@@ -6,7 +6,8 @@
 
 
 #define CRASH_CATCHER_STACK_WORD_COUNT 50
-#define CRASH_CATCHER_AUTO_STACKED_WORD_COUNT 50
+#define CRASH_CATCHER_AUTO_STACKED_WORD_COUNT 45
+#define CRASH_CATCHER_FAULT_REGISTERS_WORD_COUNT 5
 
 
 /* Fault handler will switch MSP to use this area as the stack while CrashCatcher code is running.
@@ -15,6 +16,7 @@ typedef struct
 {
     volatile uint32_t stack[CRASH_CATCHER_STACK_WORD_COUNT];
     volatile uint32_t auto_stack[CRASH_CATCHER_AUTO_STACKED_WORD_COUNT];
+    volatile uint32_t fault_status[CRASH_CATCHER_FAULT_REGISTERS_WORD_COUNT];
 }CatcherStack_TypeDef;
 
 #define CatcherStack_Base     ((uint32_t)0x20000000)
@@ -54,6 +56,15 @@ typedef enum
     CRASH_CATCHER_WORD = 4
 } CrashCatcherElementSizes;
 
+
+typedef struct
+{
+    uint32_t CFSR;/*Configurable Fault Status Register, CFSR*/
+    uint32_t MMFSR;/*MemManage Status Register, MMFSR*/
+    uint32_t BFSR;/*BusFault Status Register, BFSR*/
+    uint32_t UFSR;/*UsageFault Status Register, UFSR*/
+    uint32_t HFSR;/*HardFault Status Register  HFSR*/
+} CrashCatcherFaultStatusRegisters;
 
 
 
@@ -96,10 +107,11 @@ typedef struct
 
 typedef struct
 {
-    const CrashCatcherExceptionRegisters* pExceptionRegisters;
-    const CrashCatcherStackedRegisters*   pSP;
-    uint32_t                              sp;
-    uint32_t                              flags; 
+    const CrashCatcherExceptionRegisters*    pExceptionRegisters;
+    const CrashCatcherStackedRegisters*      pSP;
+    const CrashCatcherFaultStatusRegisters*  FSR; 
+    uint32_t                                 sp;
+    uint32_t                                 flags; 
 } Object;
 
 

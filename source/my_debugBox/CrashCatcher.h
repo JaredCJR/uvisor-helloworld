@@ -59,11 +59,11 @@ typedef enum
 
 typedef struct
 {
-    uint32_t CFSR;/*Configurable Fault Status Register, CFSR*/
-    uint32_t MMFSR;/*MemManage Status Register, MMFSR*/
-    uint32_t BFSR;/*BusFault Status Register, BFSR*/
-    uint32_t UFSR;/*UsageFault Status Register, UFSR*/
-    uint32_t HFSR;/*HardFault Status Register  HFSR*/
+    uint32_t CFSR;  /*Configurable Fault Status Register, CFSR*/
+    uint32_t MMFSR; /*MemManage Status Register, MMFSR*/
+    uint32_t BFSR;  /*BusFault Status Register, BFSR*/
+    uint32_t UFSR;  /*UsageFault Status Register, UFSR*/
+    uint32_t HFSR;  /*HardFault Status Register  HFSR*/
 } CrashCatcherFaultStatusRegisters;
 
 
@@ -87,8 +87,6 @@ typedef struct
 } CrashCatcherStackedRegisters;
 
 
-/* This structure is filled in by the Hard Fault exception handler (or unit test) and then passed in as a parameter to
-   CrashCatcher_Entry(). */
 typedef struct
 {
     uint32_t exceptionPSR;

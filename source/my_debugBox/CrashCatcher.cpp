@@ -81,7 +81,7 @@ static void initFloatingPointFlag(Object* pObject)
     }
 }
 
-static void setStackSentinel(void)
+static void setStackSentinel(CatcherStack_TypeDef *g_crashCatcherStack)
 {
     g_crashCatcherStack->stack[0] = CRASH_CATCHER_STACK_SENTINEL; 
 }
@@ -200,7 +200,7 @@ static void dumpFaultStatusRegisters(const CrashCatcherFaultStatusRegisters* pFa
 }
 
 
-static void checkStackSentinelForStackOverflow(void) 
+static void checkStackSentinelForStackOverflow(CatcherStack_TypeDef *g_crashCatcherStack) 
 {
     if ( g_crashCatcherStack->stack[0] != CRASH_CATCHER_STACK_SENTINEL)
     {
@@ -210,7 +210,7 @@ static void checkStackSentinelForStackOverflow(void)
 }
 
 
-void CrashCatcher_Entry(void)
+void CrashCatcher_Entry(CatcherStack_TypeDef *g_crashCatcherStack)
 {
     const CrashCatcherExceptionRegisters* pExceptionRegisters = 
           (const CrashCatcherExceptionRegisters*)(&g_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-12]);
@@ -226,7 +226,7 @@ void CrashCatcher_Entry(void)
     initFloatingPointFlag(&object);
 
     {
-        setStackSentinel();
+        setStackSentinel(g_crashCatcherStack);
         CrashCatcher_DumpStart();
         dumpSignature();
         dumpFlags(&object);
@@ -250,7 +250,7 @@ void CrashCatcher_Entry(void)
         dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
         
         dumpFaultStatusRegisters(pFaultStatusRegisters);
-        checkStackSentinelForStackOverflow();
+        checkStackSentinelForStackOverflow(g_crashCatcherStack);
     }
 
 }

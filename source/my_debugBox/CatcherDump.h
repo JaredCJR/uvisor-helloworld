@@ -18,7 +18,7 @@ void CrashCatcher_DumpStart(void);
 void CrashCatcher_DumpMemory(const void* pvMemory, CrashCatcherElementSizes elementSize, size_t elementCount);
 extern "C" const CrashCatcherMemoryRegion* CrashCatcher_GetMemoryRegions(void);
 void targetACLs_register(UvisorBoxAclItem *items, uint32_t ACL_size,ACLtoCrashCatcherMemoryRegion* warehouse);
-void CrashCatcher_Entry(void);
+void CrashCatcher_Entry(CatcherStack_TypeDef *g_crashCatcherStack);
 
 
 #endif /* end of CatcherDump */

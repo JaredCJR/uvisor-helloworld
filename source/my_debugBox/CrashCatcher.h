@@ -20,8 +20,7 @@ typedef struct
 }CatcherStack_TypeDef;
 
 #define CatcherStack_Base     ((uint32_t)0x20000000)
-#define g_crashCatcherStack   ((CatcherStack_TypeDef *)CatcherStack_Base)
-
+#define pg_crashCatcherStack   ((CatcherStack_TypeDef *)CatcherStack_Base)
 
 /* Bit in LR to indicate whether PSP was used for automatic stacking of registers during exception entry. */
 #define LR_PSP (1 << 2)

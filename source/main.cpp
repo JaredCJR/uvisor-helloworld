@@ -65,7 +65,7 @@ static void retry_secret(void)
                 .getHandle();
 }
 
-void app_start(int, char *[])
+static void CrashCatcher_init(void)
 {
     /* clear CrashCatcher stack*/
     for(int i =0;i<CRASH_CATCHER_STACK_WORD_COUNT;i++)
@@ -84,6 +84,11 @@ void app_start(int, char *[])
     /*register the ACLs for CrashCatcher*/
     targetACLs_register((UvisorBoxAclItem *)&g_main_acl, 12 ,&ACLs_warehouse_CrashCatcher);
 
+}
+
+
+void app_start(int, char *[])
+{
 
     /* Set the console baud-rate. */
     pc.baud(115200);

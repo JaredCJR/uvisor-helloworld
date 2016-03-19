@@ -26,6 +26,7 @@
 
 using mbed::util::FunctionPointer0;
 
+
 /* Create ACLs for main box. */
 MAIN_ACL(g_main_acl);
 
@@ -35,8 +36,10 @@ UVISOR_SET_MODE_ACL(UVISOR_ENABLED, g_main_acl);
 DigitalOut led(MAIN_LED);
 Serial pc(STDIO_UART_TX, STDIO_UART_RX);
 
-/*CrashCatcher warehouse for ACL*/
+
+/*CrashCatcher storage*/
 ACLtoCrashCatcherMemoryRegion ACLs_warehouse_CrashCatcher;
+CatcherStack_TypeDef * pg_crashCatcherStack = (CatcherStack_TypeDef *)CatcherStack_Base;
 
 uint8_t g_challenge[CHALLENGE_SIZE];
 minar::Scheduler *g_scheduler;

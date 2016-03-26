@@ -22,7 +22,7 @@
 #include "box-challenge.h"
 #include "box-debug.h"
 #include "btn.h"
-#include "my_debugBox/CatcherDump.h"
+#include "CrashCatcher/CatcherDump.h"
 
 using mbed::util::FunctionPointer0;
 

@@ -123,7 +123,7 @@ void app_start(int, char *[])
         .tolerance(minar::milliseconds(100));
 
     pc.printf("Main unprivileged box configured\r\n");
-
+/*
     pc.printf("CrashCatcher stack:\n\r");
     pc.printf("lr=%p\n\r",pg_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-1]);
     pc.printf("r11=%p\n\r",pg_crashCatcherStack->stack[CRASH_CATCHER_STACK_WORD_COUNT-2]);
@@ -146,8 +146,8 @@ void app_start(int, char *[])
     pc.printf("r2=%p\n\r",pg_crashCatcherStack->auto_stack[2]);
     pc.printf("r1=%p\n\r",pg_crashCatcherStack->auto_stack[1]);
     pc.printf("r0=%p\n\r",pg_crashCatcherStack->auto_stack[0]);
-
-    CrashCatcher_Entry(pg_crashCatcherStack);
+*/
+    //CrashCatcher_Entry(pg_crashCatcherStack);
 }
 
 void cC_printf(const char * format,...)

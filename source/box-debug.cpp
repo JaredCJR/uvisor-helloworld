@@ -18,8 +18,10 @@
 #include "uvisor-lib/uvisor-lib.h"
 #include "box-debug.h"
 #include "main-hw.h"
+#include "CrashCatcher/CatcherDump.h"
 
 extern Serial pc;
+extern ACLtoCrashCatcherMemoryRegion ACLs_warehouse_CrashCatcher;
 
 /* Delay between single blinks of a pattern. Patterns are repeated multiple
  * times, with a delay of twice the number below between them. */
@@ -44,6 +46,8 @@ static void halt_error(int reason)
     int i, k;
     int volatile j;
     static DigitalOut halt_led(HALT_LED);
+
+    CrashCatcher_Entry((CatcherStack_TypeDef *)CatcherStack_Base);
 
     pc.printf("Access denied! Will now reboot\r\n");
 

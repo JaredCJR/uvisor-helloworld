@@ -255,16 +255,16 @@ void CrashCatcher_Entry(CatcherStack_TypeDef *g_crashCatcherStack)
         dumpExceptionPSR(&object);
 
 /*FPU relevant are not able to be accessed in uVisor APIs now,so we assume that we does not use FPU.*/
-/*
+
         if (object.flags & CRASH_CATCHER_FLAGS_FLOATING_POINT)
         {
-            dumpFloatingPointRegisters(&object);
+            //dumpFloatingPointRegisters(&object);
         }
-*/
+
         /* Dump regions of ACLs*/
-        dumpMemoryRegions( CrashCatcher_getACLmemoryRegions( &ACLs_warehouse_CrashCatcher) );
+        //dumpMemoryRegions( CrashCatcher_getACLmemoryRegions( &ACLs_warehouse_CrashCatcher) );
         /* Dump Memories that you want*/
-        dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
+        //dumpMemoryRegions(CrashCatcher_GetMemoryRegions());
         
         dumpFaultStatusRegisters(pFaultStatusRegisters);
         checkStackSentinelForStackOverflow(g_crashCatcherStack);
